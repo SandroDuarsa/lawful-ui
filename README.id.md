@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/banner.png" alt="lawful-ui: Make your UI obey the law. Kartu putusan berisi daftar hukum dengan hasil FAIL, WARN, dan PASS." width="100%" />
+</p>
+
 <div align="center">
 
 # lawful-ui
@@ -202,6 +206,7 @@ Lalu minta ke agent: `tolong testing http://127.0.0.1:8765/violations.html`.
 | `rules/` | Pointer singkat untuk agent yang memuat rules, bukan skill |
 | `lawful-ui.md` | Versi satu file, dibuat oleh `scripts/build-single-file.py` |
 | `demo/` | Halaman demo dan contoh dump Android |
+| `assets/` | Logo dan banner (sumber SVG dan hasil render PNG) |
 
 ## Kredit
 

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/banner.png" alt="lawful-ui: Make your UI obey the law. A verdict card lists laws with FAIL, WARN, and PASS results." width="100%" />
+</p>
+
 <div align="center">
 
 # lawful-ui
@@ -200,6 +204,7 @@ Then ask your agent: `test http://127.0.0.1:8765/violations.html`.
 | `rules/` | A short pointer for agents that load rules instead of skills |
 | `lawful-ui.md` | The single-file version, built by `scripts/build-single-file.py` |
 | `demo/` | The demo page and a sample Android dump |
+| `assets/` | Logo and banner (SVG sources and PNG renders) |
 
 ## Credits
 

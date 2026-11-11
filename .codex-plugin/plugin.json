@@ -23,6 +23,12 @@
     "shortDescription": "Tests any web or mobile UI against 30 Laws of UX and 20 Laws of UI.",
     "longDescription": "When you ask the agent to test a website or app, lawful-ui inventories every component, measures it, checks it against 30 Laws of UX and 20 Laws of UI, and writes a prioritized findings report with evidence and fixes.",
     "developerName": "SandroDuarsa",
-    "category": "Productivity"
+    "category": "Productivity",
+    "brandColor": "#0B1220",
+    "composerIcon": "./assets/logo.png",
+    "logo": "./assets/logo.png",
+    "screenshots": [
+      "./assets/banner.png"
+    ]
   }
 }

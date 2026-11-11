@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 480" width="1280" height="480" role="img" aria-label="lawful-ui. Make your UI obey the law. An agent skill that tests interfaces against 30 Laws of UX and 20 Laws of UI.">
+<defs><pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#FFFFFF" stroke-opacity="0.045"/></pattern></defs>
+<rect width="1280" height="480" fill="#0B1220"/><rect width="1280" height="480" fill="url(#g)"/>
+<g transform="translate(72 70) scale(0.17)"><g stroke="#F8FAFC" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M256 148V376" stroke-width="22"/><path d="M176 388H336" stroke-width="22"/><path d="M124 170H388" stroke-width="22"/><path d="M124 170L82 286M124 170L166 286M388 170L346 286M388 170L430 286" stroke-width="9"/></g><path d="M62 286H186A62 62 0 0 1 62 286Z" fill="#F8FAFC"/><path d="M326 286H450A62 62 0 0 1 326 286Z" fill="#F8FAFC"/><circle cx="256" cy="148" r="24" fill="#F5B301"/><rect x="90" y="246" width="68" height="28" rx="14" fill="#F5B301"/><path d="M364 258L381 274L413 240" fill="none" stroke="#F5B301" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="80" y="248" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="96" font-weight="800" letter-spacing="-3" fill="#F8FAFC">lawful<tspan fill="#F5B301">-ui</tspan></text>
+<text x="82" y="304" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="34" font-weight="500" fill="#E2E8F0">Make your UI obey the law.</text>
+<text x="82" y="350" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="20" fill="#94A3B8">30 Laws of UX  ·  20 Laws of UI  ·  one test report</text>
+<rect x="80" y="380" width="236" height="44" rx="10" fill="#131C31" stroke="#243049"/>
+<text x="100" y="408" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="18" fill="#F5B301">&gt; <tspan fill="#E2E8F0">test this page</tspan></text>
+<rect x="742" y="62" width="466" height="356" rx="18" fill="#111A2E" stroke="#243049" stroke-width="1.5"/>
+<text x="768" y="104" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" letter-spacing="2" fill="#94A3B8">VERDICT</text>
+<text x="1182" y="104" text-anchor="end" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#94A3B8">demo/violations.html</text>
+<path d="M768 122H1182" stroke="#243049"/>
+<rect x="768" y="140" width="62" height="30" rx="8" fill="#F87171"/>
+<text x="799" y="160.5" text-anchor="middle" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#0B1220">FAIL</text>
+<text x="846" y="154" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#F8FAFC"><tspan fill="#94A3B8" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400">L07</tspan>  Fitts's Law</text>
+<text x="846" y="176" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#94A3B8">icon button 16 px</text>
+<rect x="768" y="194" width="62" height="30" rx="8" fill="#F87171"/>
+<text x="799" y="214.5" text-anchor="middle" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#0B1220">FAIL</text>
+<text x="846" y="208" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#F8FAFC"><tspan fill="#94A3B8" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400">U08</tspan>  Contrast</text>
+<text x="846" y="230" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#94A3B8">2.0 : 1, needs 4.5</text>
+<rect x="768" y="248" width="62" height="30" rx="8" fill="#FBBF24"/>
+<text x="799" y="268.5" text-anchor="middle" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#0B1220">WARN</text>
+<text x="846" y="262" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#F8FAFC"><tspan fill="#94A3B8" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400">L10</tspan>  Hick's Law</text>
+<text x="846" y="284" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#94A3B8">14 nav items</text>
+<rect x="768" y="302" width="62" height="30" rx="8" fill="#F87171"/>
+<text x="799" y="322.5" text-anchor="middle" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#0B1220">FAIL</text>
+<text x="846" y="316" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#F8FAFC"><tspan fill="#94A3B8" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400">L04</tspan>  Cognitive Bias</text>
+<text x="846" y="338" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#94A3B8">pre-ticked add-on</text>
+<rect x="768" y="356" width="62" height="30" rx="8" fill="#4ADE80"/>
+<text x="799" y="376.5" text-anchor="middle" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="700" fill="#0B1220">PASS</text>
+<text x="846" y="370" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#F8FAFC"><tspan fill="#94A3B8" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="15" font-weight="400">U02</tspan>  Alignment and Grid</text>
+<text x="846" y="392" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="14" fill="#94A3B8">1 shared left edge</text>
+</svg>

@@ -20,5 +20,6 @@
   ],
   "category": "productivity",
   "skills": "./skills/",
-  "rules": "./rules/"
+  "rules": "./rules/",
+  "logo": "./assets/logo.png"
 }
