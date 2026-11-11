@@ -29,7 +29,7 @@ These come from platform guidelines and WCAG 2.2, so treat them as firm.
 | Text contrast | 4.5 : 1 normal text; 3 : 1 large text (24 px+, or 18.66 px+ bold) and UI component boundaries |
 | Feedback after an action | Visible within 100 ms feels instant; 400 ms is the Doherty limit; show a loading indicator past 1 s; show progress and allow leaving past 10 s |
 | Body text size | 16 px web / 17 pt iOS / 16 sp Android is the comfortable default; below 12 is a fail |
-| Line length | About 45 to 90 characters per line on desktop, 30 to 50 on phones |
+| Line length | About 45 to 75 characters per line on desktop (over 90 is a fail signal), 30 to 50 on phones |
 
 ---
 

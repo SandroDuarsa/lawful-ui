@@ -44,7 +44,7 @@ Dari pengujian halaman demo di repo ini:
   hapus "OK" dan "Lanjut".
 ```
 
-Laporan lengkap juga memuat inventaris komponen, hasil per komponen, tabel cakupan 50 hukum, skor UX dan skor UI, hasil per alur, catatan fungsional, urutan perbaikan, dan daftar yang tidak bisa diuji beserta alasannya.
+Laporan lengkap juga memuat inventaris komponen, hasil per komponen, tabel cakupan 50 hukum, skor UX dan skor UI, hasil per alur, catatan fungsional, urutan perbaikan, dan daftar yang tidak bisa diuji beserta alasannya. Contoh utuhnya ada di [`demo/sample-report.md`](demo/sample-report.md): 23 temuan pada halaman demo.
 
 ## Daftar hukum
 
@@ -144,7 +144,7 @@ baca dan ikuti skills/lawful-ui/SKILL.md sebelum mulai.
 
 ### Versi satu file
 
-[`lawful-ui.md`](lawful-ui.md) adalah seluruh skill dalam satu file, untuk ditempel ke jendela chat. Dua script ukur tidak ikut di dalamnya.
+[`lawful-ui.md`](lawful-ui.md) adalah seluruh skill dalam satu file, untuk ditempel ke jendela chat. Script ukur tidak ikut di dalamnya.
 
 ```bash
 curl -o lawful-ui.md https://raw.githubusercontent.com/SandroDuarsa/lawful-ui/main/lawful-ui.md
@@ -169,7 +169,8 @@ Di situs produksi yang sedang hidup, skill ini meminta AI hanya melakukan aksi y
 
 | Platform | Cara |
 |---|---|
-| Web | [`ux_probe.js`](skills/lawful-ui/scripts/ux_probe.js) dijalankan di halaman lewat otomasi browser apa pun (Playwright, Puppeteer, Selenium, browser milik agent, atau console). Script ini hanya membaca halaman. Yang dilaporkan: ukuran target, target yang berdempetan, kontras yang gagal, jumlah pilihan per navigasi dan select, gaya tombol, masalah field form, skala jarak, palet warna, radius, line-height, garis fokus yang dihapus, masalah gambar, zoom yang diblokir, dan waktu muat. |
+| Web | [`ux_probe.js`](skills/lawful-ui/scripts/ux_probe.js) dijalankan di halaman lewat otomasi browser apa pun (Playwright, Puppeteer, Selenium, browser milik agent, atau console). Script ini hanya membaca halaman. Yang dilaporkan: ukuran target, target yang berdempetan, kontras yang gagal, jumlah pilihan per navigasi dan select, gaya tombol, masalah field form, checkbox yang sudah tercentang, password yang terkirim lewat URL, skala jarak, tepi alignment, palet warna, radius, line-height, garis fokus yang dihapus, masalah gambar, zoom yang diblokir, dan waktu muat, masing-masing dengan selector supaya bisa ditemukan. |
+| Web, interaktif | [`ux_checks.js`](skills/lawful-ui/scripts/ux_checks.js) menangani yang tidak bisa dibaca saja: apakah sebuah klik berefek (tombol mati), perhentian Tab mana yang kehilangan garis fokus, state mana yang punya gaya, serta tampilan sementara grayscale dan text-spacing. [`serve.py`](skills/lawful-ui/scripts/serve.py) menyajikan kedua script di localhost untuk browser agent yang hanya menerima string JavaScript. |
 | Android | [`android_targets.py`](skills/lawful-ui/scripts/android_targets.py) membaca dump `uiautomator` dan melaporkan target tap di bawah 48 dp, target yang berdempetan, dan kontrol tanpa label. |
 | iOS, Flutter, React Native | Panduan mengukur dari screenshot, accessibility tree, dan kode sumber. Belum ada script. |
 
@@ -201,11 +202,11 @@ Lalu minta ke agent: `tolong testing http://127.0.0.1:8765/violations.html`.
 | `skills/lawful-ui/references/ui-laws.md` | 20 Laws of UI sebagai kriteria uji |
 | `skills/lawful-ui/references/components.md` | Checklist per jenis komponen dan per alur |
 | `skills/lawful-ui/references/web.md`, `mobile.md` | Cara mengukur di tiap platform |
-| `skills/lawful-ui/scripts/` | Dua script ukur |
+| `skills/lawful-ui/scripts/` | Script-script ukur |
 | `skills/lawful-ui/assets/report-template.md` | Template laporan |
 | `rules/` | Pointer singkat untuk agent yang memuat rules, bukan skill |
 | `lawful-ui.md` | Versi satu file, dibuat oleh `scripts/build-single-file.py` |
-| `demo/` | Halaman demo dan contoh dump Android |
+| `demo/` | Halaman demo, contoh laporan utuh, dan contoh dump Android |
 | `assets/` | Logo dan banner (sumber SVG dan hasil render PNG) |
 
 ## Kredit

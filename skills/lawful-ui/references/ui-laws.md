@@ -23,21 +23,25 @@ Each law has an ID (U01 to U20) used in the report. Numbers that come from WCAG 
 
 ## Which UI laws apply to which component
 
-Every visible component is checked against U01 to U04, U08, and U10. The rest depend on the type:
+Judge the layout and system laws once per screen, on its `C0` row: U01 Visual Hierarchy, U02 Alignment, U03 Spacing, U04 Whitespace, U07 Color System, U10 Consistency, U20 Responsive. They describe how components relate, so they are not re-judged on every component; when one component is the cause (a stray edge, an off-palette button), name that component in the finding.
 
-| Component type | Also apply |
+Per component, apply the laws for its type:
+
+| Component type | Apply |
 |---|---|
-| Any text (headings, body, labels) | U05, U06 |
-| Buttons, links, any control | U11, U12, U13, U14, U09 |
-| Navigation, tab bars, menus | U11, U12, U13, U14, U15 |
-| Forms and inputs | U16, U12, U13, U14, U09 |
-| Icons | U15, U12, U08 |
-| Cards, lists, tables | U17, U18 |
-| Modals, sheets, popovers, toasts | U17, U19, U14 |
+| Any text (headings, body, labels) | U05, U06, U08 |
+| Buttons, links, any control | U08, U09, U11, U12, U13, U14 |
+| Navigation, tab bars, menus | U08, U11, U12, U13, U14, U15 |
+| Forms and inputs | U08, U09, U12, U13, U14, U16 |
+| Selection controls (checkbox, radio, select, toggle) | U08, U09, U12, U13, U14 |
+| Icons | U08, U12, U15 |
+| Cards, lists, tables | U08, U17, U18 |
+| Banners, alerts, toasts, inline messages | U07, U08, U09, U19 |
+| Modals, sheets, popovers | U08, U14, U17, U19 |
 | Images, video, illustrations | U18 |
 | Anything animated | U19 |
-| Status, errors, badges, charts | U09, U07 |
-| The screen as a whole (`C0`) | U01, U04, U07, U20 |
+| Status badges, charts | U07, U08, U09 |
+| A missing state (no error, loading, or empty state) | U13 only |
 
 ---
 

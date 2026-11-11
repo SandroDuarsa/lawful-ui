@@ -2,7 +2,7 @@
 
 > This is lawful-ui as a single file. Paste it into a chat, or reference it from your agent's instruction file.
 > Wherever the text names a file (`references/laws.md`, `assets/report-template.md`, and so on), that file is
-> included below as a part of this document. The two measuring scripts are not included; get them from
+> included below as a part of this document. The measuring scripts are not included; get them from
 > https://github.com/SandroDuarsa/lawful-ui/tree/main/skills/lawful-ui/scripts or measure by hand.
 
 # Part 1: Workflow
@@ -60,9 +60,11 @@ The inventory is what makes the test complete. A component that is not in the in
 
 #### 3. Measure
 
-Collect numbers before forming opinions. On web, run `scripts/ux_probe.js` at a desktop viewport and at a phone viewport (about 375 × 812). On Android, dump the view hierarchy and run `scripts/android_targets.py`. Elsewhere, measure from screenshots or read values from code.
+Collect numbers before forming opinions. On web, run `scripts/ux_probe.js` at a desktop viewport and at a phone viewport (about 375 × 812), and use `scripts/ux_checks.js` for the checks that need interaction (dead controls, focus, state styles). On Android, dump the view hierarchy and run `scripts/android_targets.py`. Elsewhere, measure from screenshots or read values from code. You do not need to read the scripts' source: the platform guide documents how to run them and what every output field means.
 
 Exercise the states, not just the resting screen: hover, focus, pressed, disabled, loading, empty, error, and long or unusual content.
+
+Temporary measuring aids are fine: an injected style to view the page in grayscale, an event listener to time a click, a different viewport size. They must disappear on reload, and you reload before measuring anything else. Never change the product's code, content, or saved data in order to test it.
 
 #### 4. Evaluate each component against its laws
 
@@ -71,15 +73,20 @@ For each component, apply both sets:
 - **UX laws:** look up the component type in `references/components.md` to see which laws apply and what to check. Use `references/laws.md` for the pass / fail criteria.
 - **UI laws:** use the table "Which UI laws apply to which component" at the top of `references/ui-laws.md`, then the criteria below it.
 
-When one defect touches both sets (a 16 px icon button fails L07 Fitts's Law and U12 Touch Targets), write one finding and cite both laws.
+One defect is one finding, however many laws it touches. Give each finding:
 
-Give every component-law pair one status:
+- a **primary law**: the single law that best explains the harm to the user;
+- **related laws**: any others it also breaks (a 16 px icon button has U12 Touch Targets as primary and L07 Fitts's Law as related, or the reverse; pick one).
 
+Give every check (a component against a law, or a flow against a law) one status:
+
+- **FAIL**: the check found a problem that breaks a firm threshold (the WCAG and platform numbers in `laws.md` and `ui-laws.md`), or that you rate High or Critical.
+- **WARN**: the check found a problem rated Medium or Low that breaks no firm threshold.
 - **PASS**: meets the criteria, with evidence.
-- **WARN**: works, but is weaker than it should be, or sits near a threshold.
-- **FAIL**: violates the law in a way that will cost users time, errors, or trust.
-- **N/A**: the law does not apply to this component.
+- **N/A**: the law does not apply here.
 - **NOT TESTED**: it applies, but you could not verify it with the access you had. Say what would be needed.
+
+Check everything that applies, but only write down what is not a PASS. The report lists each component with its worst status and the laws that failed or warned; a law not listed for a component passed or did not apply.
 
 #### 5. Evaluate the flows
 
@@ -87,13 +94,13 @@ Some laws only show up across a journey, not on a single component: Doherty Thre
 
 #### 6. Report
 
-Write the report using `assets/report-template.md`. Write it in the language the user is using. Save it as a file when you can write files; otherwise put it in the reply.
+Write the report using `assets/report-template.md`. Write it in the language the user is using: translate the headings and the prose, and keep these in English so they can be looked up: law names and IDs, status words (PASS, WARN, FAIL, N/A, NOT TESTED), severity words, and evidence tags. Save it as a file when you can write files; otherwise put it in the reply.
 
-Every one of the 30 UX laws and 20 UI laws appears in its coverage table with a status, even if the status is N/A or NOT TESTED, so the reader can see nothing was skipped. The status of a law follows from its findings, component-level and flow-level alike, so that two testers reach the same result:
+Every one of the 30 UX laws and 20 UI laws appears in its coverage table with a status, even if the status is N/A or NOT TESTED, so the reader can see nothing was skipped. A law's status comes from the findings that name it, so that two testers reach the same table:
 
-- FAIL: at least one Critical or High finding cites the law.
-- WARN: only Medium or Low findings cite it.
-- PASS: it was checked and no finding cites it.
+- FAIL: a finding has it as **primary law** and that finding is a FAIL (firm threshold broken, or High or Critical).
+- WARN: a finding has it as primary law and is a WARN; or findings name it only as a related law.
+- PASS: it was checked and no finding names it.
 - N/A or NOT TESTED: as defined above.
 
 Report two scores, one per coverage table: UX score and UI score, each (PASS + 0.5 × WARN) ÷ (PASS + WARN + FAIL) × 100. They exist to compare one run with the next on the same product.
@@ -123,10 +130,12 @@ The UX laws are heuristics drawn from psychology, not a compliance standard. The
 
 | Severity | Meaning |
 |---|---|
-| Critical | Blocks a main task, destroys saved data, or tricks the user into paying or sharing something they did not choose |
+| Critical | Blocks a main task (a user following the obvious path cannot finish it), destroys saved data, or tricks the user into paying or sharing something they did not choose |
 | High | Main task is still possible but slow, error-prone, or confusing for most users; loses unsaved input; pressures the user without costing them money or data |
 | Medium | Friction on a secondary task, or a main-task issue only some users will meet |
 | Low | Polish; noticeable but cheap to live with |
+
+When the cause of a problem is functional (a button with no handler, a form with no backend), write what the user experiences as a law finding and the cause as a functional note, and point each at the other. Do not write the same thing twice.
 
 A heuristic audit finds likely problems. It does not replace watching real users, and the report should say so in one line.
 
@@ -139,7 +148,9 @@ A heuristic audit finds likely problems. It does not replace watching real users
 | `references/components.md` | Mapping a component type or a flow to the UX laws and checks that apply |
 | `references/web.md` | Testing a website or web app; explains the probe output |
 | `references/mobile.md` | Testing Android, iOS, Flutter, or React Native |
-| `scripts/ux_probe.js` | Measuring a web page (paste into any browser automation or the console) |
+| `scripts/ux_probe.js` | Measuring a web page; read-only |
+| `scripts/ux_checks.js` | Interactive web checks: dead controls, focus visibility, state styles, grayscale and text-spacing aids |
+| `scripts/serve.py` | Serving the scripts on localhost for browser tools that take only a string of JavaScript |
 | `scripts/android_targets.py` | Measuring tap targets from an Android view-hierarchy dump |
 | `assets/report-template.md` | Writing the report |
 
@@ -178,7 +189,7 @@ These come from platform guidelines and WCAG 2.2, so treat them as firm.
 | Text contrast | 4.5 : 1 normal text; 3 : 1 large text (24 px+, or 18.66 px+ bold) and UI component boundaries |
 | Feedback after an action | Visible within 100 ms feels instant; 400 ms is the Doherty limit; show a loading indicator past 1 s; show progress and allow leaving past 10 s |
 | Body text size | 16 px web / 17 pt iOS / 16 sp Android is the comfortable default; below 12 is a fail |
-| Line length | About 45 to 90 characters per line on desktop, 30 to 50 on phones |
+| Line length | About 45 to 75 characters per line on desktop (over 90 is a fail signal), 30 to 50 on phones |
 
 ---
 
@@ -619,21 +630,25 @@ Each law has an ID (U01 to U20) used in the report. Numbers that come from WCAG 
 
 ### Which UI laws apply to which component
 
-Every visible component is checked against U01 to U04, U08, and U10. The rest depend on the type:
+Judge the layout and system laws once per screen, on its `C0` row: U01 Visual Hierarchy, U02 Alignment, U03 Spacing, U04 Whitespace, U07 Color System, U10 Consistency, U20 Responsive. They describe how components relate, so they are not re-judged on every component; when one component is the cause (a stray edge, an off-palette button), name that component in the finding.
 
-| Component type | Also apply |
+Per component, apply the laws for its type:
+
+| Component type | Apply |
 |---|---|
-| Any text (headings, body, labels) | U05, U06 |
-| Buttons, links, any control | U11, U12, U13, U14, U09 |
-| Navigation, tab bars, menus | U11, U12, U13, U14, U15 |
-| Forms and inputs | U16, U12, U13, U14, U09 |
-| Icons | U15, U12, U08 |
-| Cards, lists, tables | U17, U18 |
-| Modals, sheets, popovers, toasts | U17, U19, U14 |
+| Any text (headings, body, labels) | U05, U06, U08 |
+| Buttons, links, any control | U08, U09, U11, U12, U13, U14 |
+| Navigation, tab bars, menus | U08, U11, U12, U13, U14, U15 |
+| Forms and inputs | U08, U09, U12, U13, U14, U16 |
+| Selection controls (checkbox, radio, select, toggle) | U08, U09, U12, U13, U14 |
+| Icons | U08, U12, U15 |
+| Cards, lists, tables | U08, U17, U18 |
+| Banners, alerts, toasts, inline messages | U07, U08, U09, U19 |
+| Modals, sheets, popovers | U08, U14, U17, U19 |
 | Images, video, illustrations | U18 |
 | Anything animated | U19 |
-| Status, errors, badges, charts | U09, U07 |
-| The screen as a whole (`C0`) | U01, U04, U07, U20 |
+| Status badges, charts | U07, U08, U09 |
+| A missing state (no error, loading, or empty state) | U13 only |
 
 ---
 
@@ -949,7 +964,7 @@ States are visibly different from one another, and consistent across components.
 
 Find the component type, apply the listed laws, and run the checks. Law IDs (L01 to L30) refer to the UX laws in `laws.md`. The listed laws are the ones that most often matter for that component; apply any other law that is clearly relevant too.
 
-This file covers the UX laws. Every component is also checked against the UI laws (U01 to U20): the table at the top of `ui-laws.md` says which ones apply to each component type.
+This file covers the UX laws. Every component is also checked against the UI laws (U01 to U20): the table at the top of `ui-laws.md` says which ones apply to each component type, and which are judged once per screen.
 
 A component that fits no type here still gets tested: pick the closest type and reason from the laws directly.
 
@@ -1150,7 +1165,7 @@ Run these once per screen, after the components. Record the results on the scree
 
 ### Flow-level checks
 
-Walk each main task from start to finish and record the steps, taps, and seconds it takes. Flow results count toward each law's status in the coverage table, and their findings are written up like any other, citing the flow instead of a component.
+Walk each main task from start to finish and record its size: screens, fields, and actions needed. Record time only when a person performed it; seconds under automation mean nothing. Flow results count toward each law's status in the coverage table, and their findings are written up like any other, citing the flow instead of a component.
 
 | Check | Laws |
 |---|---|
@@ -1191,14 +1206,17 @@ Use whatever browser access you have. Any of these work: a built-in browser tool
 
 For each screen in scope:
 
-1. Load it at a desktop viewport (about 1280 × 800) and at a phone viewport (about 375 × 812). Take a screenshot of each.
+1. Load it at a desktop viewport (about 1280 × 800) and at a phone viewport (about 375 × 812). Take a screenshot of each. Check 320 px wide once for sideways scrolling.
 2. Run `scripts/ux_probe.js` in the page at both viewports. It is one JavaScript expression that returns an object. It only reads the page.
-3. Open what is hidden and run the probe again where it matters: menus, modals, dropdowns, accordions, tabs, the mobile navigation drawer.
-4. Trigger the states: submit a form empty and with bad input, slow the network, look at empty and loading states, hover and tab through the controls. Submitting is only safe on a local, test, or staging environment; see "Mind side effects" in SKILL.md before doing it anywhere else.
+3. Load `scripts/ux_checks.js` and run the interactive checks (next section).
+4. Open what is hidden and run the probe again where it matters: menus, modals, dropdowns, accordions, tabs, the mobile navigation drawer.
+5. Trigger the states: submit a form empty and with bad input, slow the network, look at empty and loading states, hover and tab through the controls. Submitting is only safe on a local, test, or staging environment; see "Mind side effects" in SKILL.md before doing it anywhere else.
 
 On a page that does not change between viewports, the second probe run repeats the first. Read only `page`, `warnings`, `summary`, and `smallTargets` from it.
 
-Running the probe:
+### Running the scripts
+
+If your tool can read local files, pass the file's contents to the page:
 
 ```js
 // Playwright or Puppeteer
@@ -1210,68 +1228,86 @@ const result = await page.evaluate(require('fs').readFileSync('scripts/ux_probe.
 result = driver.execute_script("return " + open("scripts/ux_probe.js").read())
 ```
 
-In a browser console, paste the file contents; to copy the result, wrap the paste as `copy(JSON.stringify( ...paste... , null, 2))`.
+If your tool accepts only a string of JavaScript (most agent browser tools), do not paste the script again after every reload. Serve the folder once and load it by URL:
 
-Some agent browser tools accept only a string of JavaScript and cannot read a local file. Pass the file's contents as that string. If the tool returns only serialisable values, wrap the script: `JSON.stringify( ...script... )`. To avoid resending the script for every screen, store it once per page load (`window.__probe = <script text as a string>`) and call `(0, eval)(window.__probe)` afterwards.
+```bash
+python3 scripts/serve.py        # http://127.0.0.1:8791, localhost only, read-only
+```
+
+```js
+JSON.stringify((0, eval)(await (await fetch('http://127.0.0.1:8791/ux_probe.js')).text()))
+```
+
+Stop the server when the test is done. If the page's Content-Security-Policy blocks the fetch, paste the script's contents instead. In a browser console, paste the file contents; to copy the result, wrap the paste as `copy(JSON.stringify( ...paste... , null, 2))`.
+
+### Interactive checks: `ux_checks.js`
+
+Evaluate the file once per page load. It defines `window.__lawful`. Unlike the probe, these act on the page, so the side-effect rule applies to `click`.
+
+| Call | What it answers | Laws |
+|---|---|---|
+| `await __lawful.click(selector)` | Did anything happen within a second of clicking? `dead: true` means no DOM change and no navigation: report "no feedback" and a functional note. If the click navigates, the call never returns, which itself shows the control works. | L06, U13 |
+| `__lawful.focusTour()` | `outlineRemovedByRule`: tab stops whose focus outline an author rule removes with nothing in its place (reliable). `noChangeOnScriptFocus`: a weaker hint, since focus set from script does not always show the keyboard focus ring; confirm a few by pressing Tab. `tabStopsBeforeFirstField`: how many Tab presses before the first field. | U14, L21 |
+| `__lawful.stateRules()` | How many style rules exist for `:hover`, `:active`, `:focus`, `:focus-visible`, `:disabled`, `aria-current`, `aria-selected`. Zero rules for a state means the state was never designed. | U13 |
+| `__lawful.aid('grayscale')` | Shows the page without color. Take a screenshot: is every status, selection, and link still distinguishable? | U09 |
+| `__lawful.aid('textSpacing')` then `__lawful.clipped()` | Applies the WCAG 1.4.12 spacing values, then lists text that no longer fits its box. | U06, U20 |
+| `__lawful.aid('off')` | Removes the aid. A reload does the same. | |
 
 ### Reading the probe output
 
-The probe reports signals. You still decide the status, using `laws.md`.
+The probe reports signals. You still decide the status, using `laws.md` and `ui-laws.md`. Lists carry an `example` selector wherever a value was first seen, so you can cite a location.
 
 | Field | What it tells you | Laws |
 |---|---|---|
-| `warnings` | Not empty means some values are unreliable (for example the tab was hidden); fix the cause and run again | |
-| `page.horizontalOverflowPx` | Greater than 0 on a phone viewport means the layout is broken | L01, L24 |
+| `warnings` | Not empty means some values are unreliable or need care: hidden tab, localhost timing, no page background, content wider than the viewport. Read these first. | |
+| `page.horizontalOverflowPx` | Greater than 0 on a phone viewport means the layout is broken | L01, L24, U20 |
 | `page.screensTall` | Page length in viewports; very long pages need chunking and navigation aids | L03 |
-| `smallTargets` | Controls under 44 px, with size, nearest neighbour gap, and whether a label extends the hit area. `fail` rows are under 24 px. Inline text links are already excluded. | L07 |
-| `summary.crowdedSmallTargets` | Small targets with less than 8 px to the next target | L07 |
+| `smallTargets` | Controls under the size minimum, grouped: siblings of the same kind share one row with a `count`, size range, and `smallestGapPx`. `fail` rows are under 24 px. Inline text links are excluded. On a pointer layout only the under-24 rows are listed; on a touch layout everything under 44. | L07, U12 |
+| `summary.crowdedSmallTargets` | Small targets with less than 8 px to the next target | L07, U12 |
 | `navigation` | Item count per navigation group, plus first and last item | L10, L26, L02 |
 | `selects`, `radioGroups` | Options per choice control | L10, L02 |
-| `buttonStyles` | Distinct visual styles among buttons with examples; many styles for the same role means inconsistency | L15 |
-| `emphasizedButtons` | Buttons with a solid background that stands out from its surroundings, each flagged `aboveFold`. More than one in the same view means they compete for the primary role. | L28, L10 |
-| `forms` | Field count, required count, sections, and submit buttons per form | L03, L19, L10 |
-| `fieldIssues` | Missing labels, placeholder-only labels, missing `autocomplete`, wrong input type, missing `inputmode` | L22, L24, L27, L05 |
-| `contrastFailures` | Text below the WCAG ratio. `backgroundUncertain: true` means an image or gradient is behind it; check that one by eye. | L05, L01 |
-| `smallText`, `fontSizesPx`, `fontFamilies` | Text under 12 px; how many sizes and families are in use | L01, L14, L05 |
-| `longLines`, `wallsOfText` | Lines over 90 characters; blocks over 600 characters | L03, L05 |
-| `headings` | Heading outline; check for a single h1 and no skipped levels | L03, L14 |
-| `summary.fixedOrStickyElements`, `runningAnimations` | Things that follow the user or move; each one competes for attention | L25, L08 |
+| `buttonStyles` | Distinct visual styles among buttons, with examples; many styles for one role means inconsistency | L15, U10 |
+| `emphasizedButtons` | Buttons with a solid background that stands out. More than one in the same view compete for the primary role. `aboveFold` is measured from the top of the page, whatever the scroll position. | L28, L10, U01 |
+| `forms` | Per form: `method`, field count, required count, sections, submit and reset buttons, and `passwordSentInUrl` (a GET form with a password field: report as a functional and security note) | L03, L19, L10 |
+| `preCheckedCheckboxes` | Boxes ticked before the user touched anything. Read each label: a pre-selected cost, upsell, or consent is a dark pattern. | L04 |
+| `fieldIssues` | Missing labels, placeholder-only labels, missing `autocomplete`, wrong input type, missing `inputmode` | L22, L24, L27, L05, U16 |
+| `contrastFailures` | Text below the WCAG ratio. `backgroundUncertain: true` means an image or gradient is behind it; check that one by eye. Placeholder text is not measured. | U08, L05 |
+| `smallText`, `fontSizesPx`, `fontFamilies` | Text under 12 px; how many sizes and families are in use | U05, L01 |
+| `longLines`, `wallsOfText` | Lines over 90 characters; blocks over 600 characters. `widerThanViewport: true` means the block overflows the screen, so the count describes the layout and not what the user sees at once. | U06, L03 |
+| `headings` | Heading outline; check for a single h1 and no skipped levels | U01, L03 |
+| `summary.fixedOrStickyElements`, `runningAnimations` | Things that follow the user or move; each one competes for attention | L25, L08, U19 |
 | `timingMs` | First byte, first contentful paint, DOM ready, load | L06 |
-| `ui.spacing` | Most used padding, margin, and gap values, and those that are not multiples of 4. `summary.spacingOffScalePercent` is their share. A high share or many distinct values means no spacing system. | U03 |
-| `ui.leftEdgesPx` | Left edges shared by headings, paragraphs, lists, and fields. A few edges with many elements is a grid; many edges with one or two elements each are strays. | U02 |
+| `ui.pageBackgroundSet` | `false` means neither `html` nor `body` sets a background. The page then depends on the host being white; in a dark webview the text can vanish. Report it. | U08, U07 |
+| `ui.spacing` | Most used padding, margin, and gap values (each counted once per element), and those that are not multiples of 4. Browser defaults are included, such as heading margins: an off-scale value on an unstyled heading is not the author's choice. | U03 |
+| `ui.leftEdgesPx` | Where text blocks, images, and fields start. One or two edges holding most elements is a grid; edges with a single element are strays. | U02 |
+| `ui.fieldWidthsPx` | Widths of inputs and selects. Several widths in one column mean ragged right edges. | U02, U16 |
 | `ui.textColors`, `ui.backgroundColors` | Palette actually in use, with counts. Look for near-duplicates and colors used for conflicting roles. | U07 |
-| `ui.cornerRadii`, `ui.shadows` | Distinct radius and shadow styles | U10, U17 |
+| `ui.cornerRadii`, `ui.shadows` | Radius (including square, `0px`) and shadow styles of boxes | U10, U17 |
 | `ui.tightLineHeight` | Multi-line text blocks with line height under 1.3 | U06 |
-| `ui.minTextInsetLeftPx` | Smallest distance from text to the left screen edge; under 16 on a phone is cramped | U04 |
-| `ui.focus.outlineRemovedWithoutReplacement` | Style rules that remove the focus outline and set nothing in its place. Confirm by tabbing through the page. `unreadableStylesheets` counts cross-origin stylesheets the probe could not inspect. | U14 |
-| `ui.motion` | How many elements animate, and whether a reduced-motion rule exists | U19 |
-| `ui.theme.hasColorSchemeRule` | Whether the styles respond to dark mode; if so, test both themes | U07 |
+| `ui.minTextInsetLeftPx`, `ui.minTextInsetAt` | Smallest distance from text to the left screen edge and where; under 16 on a phone is cramped | U04 |
+| `ui.focus.outlineRemovedWithoutReplacement` | Style rules that remove the focus outline and set nothing in its place. `unreadableStylesheets` counts cross-origin stylesheets the probe could not inspect. | U14 |
+| `ui.motion` | How many elements animate. `hasReducedMotionRule` is `null` when nothing animates (U19 is then N/A), otherwise whether a reduced-motion rule exists. | U19 |
+| `ui.theme.hasColorSchemeRule` | `true`: the styles respond to dark mode, so test both themes. `false`: single theme; then `pageBackgroundSet` must be true. | U07 |
 | `ui.images` | Images that are stretched, upscaled, missing `alt`, or have no reserved size | U18 |
 | `ui.viewportMeta`, `ui.zoomBlocked` | Viewport tag, and whether it stops the user zooming | U20 |
-| `smallTargets`, `contrastFailures`, `buttonStyles`, `fontSizesPx`, `fieldIssues`, `page.horizontalOverflowPx` | Already listed above; they also feed U12, U08, U10, U05, U16, and U20 | U-laws |
 
 Notes on reading it:
 
-- On a pointer (desktop) layout `smallTargets` lists only controls under 24 px; on a touch layout it lists everything under 44 px. `summary.targetsBelow44px` counts both either way.
 - A checkbox or radio can appear as a small target while `labelExtendsHitArea` is true. Measure the label instead before failing it.
 - "no associated label" means no `<label>`, `aria-label`, or `aria-labelledby` is tied to the field. There may still be visible text beside it; look at the screenshot, and report an unassociated visible label as a weaker problem than no label at all.
 - `timingMs` from localhost, a hidden tab, or an embedded browser pane does not represent what users get. The probe adds a warning in those cases; report page speed as NOT TESTED unless you measured in a realistic setting.
 
-### What the probe cannot see
+### What still needs your eyes
 
-Check these by hand:
-
-- **Interaction response time (L06).** Click and watch: does anything change within 400 ms? To measure, record `performance.now()` before the click and again in a `requestAnimationFrame` callback after the first visible change, or use a trace. A control that produces no DOM change and no navigation within a second of being clicked is a dead control: report it as "no feedback" under L06 and as a functional defect.
 - **Grouping (L12, L13, L16).** Judge from the screenshot. For a label and field, compare the gap from the label to its own field with the gap to the field above.
 - **Visual hierarchy and affordance (U01, U11).** Squint at the screenshot: what stands out first, and does everything clickable look clickable?
-- **States (U13, U14).** Hover, press, and tab through each control; trigger loading, error, empty, and disabled states.
-- **Color independence (U09).** View the screenshot in grayscale: is every status and selection still distinguishable?
-- **Text resize and reflow (U20).** Zoom to 200% and narrow the window to 320 px.
 - **Conventions and wording (L11, L17, L20).** Read the labels as a first-time user would.
 - **Flows (L08, L09, L23, L29, L30).** Walk them. Leave midway and come back. Use the back button. Fail a step on purpose.
 - **Input tolerance (L24).** Type a phone number with spaces, an email in capitals with a trailing space, a pasted code.
-- **Dark patterns (L04).** Read the checkout, cancellation, and consent screens closely.
-- **Keyboard (L11).** Tab order, visible focus, Enter and Esc.
+- **Dark patterns (L04).** Read the checkout, cancellation, and consent screens closely. `preCheckedCheckboxes` finds one kind; fake urgency and confirmshaming need reading.
+- **Interaction response time (L06).** `__lawful.click` reports `msToFirstChange`; for anything it cannot reach, watch whether something changes within 400 ms.
+- **Text resize (U20).** Browser zoom to 200% usually cannot be set from a script. If you cannot do it, narrow the viewport to 320 px as the nearest equivalent and list 200% zoom under "Not tested".
+- **Keyboard (L11).** Tab order, Enter and Esc.
 
 ### Source-only mode
 
@@ -1280,8 +1316,8 @@ When you cannot run the page, read the code. Look for:
 - Sizes: `width`, `height`, `padding`, `min-height` on buttons, icon buttons, and inputs; utility classes such as `w-4 h-4`, `p-1`; design-token values.
 - Spacing and type scales in the theme or token files, and one-off values that bypass them.
 - Component variants: how many button variants exist and whether screens use them consistently.
-- Form markup: `<label>`, `type`, `autocomplete`, `inputmode`, `required`, validation messages and where they render.
-- State handling: loading, empty, and error branches in each view; disabled and pending states on submit handlers; debounce and double-submit guards.
+- Form markup: `<label>`, `type`, `autocomplete`, `inputmode`, `required`, `method`, `checked`, validation messages and where they render.
+- State handling: loading, empty, and error branches in each view; disabled and pending states on submit handlers; debounce and double-submit guards; `:hover`, `:active`, `:focus-visible` styles.
 - Navigation structure: route definitions, number of top-level items, depth of the main task.
 - Copy: labels, error strings, confirmation text.
 
@@ -1368,7 +1404,8 @@ Count from touch to first visible change. A pressed state should show at once; a
 
 ## UX and UI Laws Test Report: [product or screen name]
 
-<!-- Write the whole report in the user's language. Keep law names in English so they can be looked up. -->
+<!-- Write the report in the user's language: translate headings and prose. Keep in English: law names and IDs,
+     status words (PASS, WARN, FAIL, N/A, NOT TESTED), severity words, and evidence tags. -->
 
 **Date:** [date] · **Platform:** [web / Android / iOS / ...] · **Tested by:** [agent or person]
 
@@ -1406,20 +1443,23 @@ Ordered by severity. One block per finding.
 #### F-01 [short title]: [Critical / High / Medium / Low]
 
 - **Component:** [S1-C2, name] · **Where:** [selector, file:line, or screenshot region]
-- **Law:** [L07 Fitts's Law, U12 Touch Targets] (every UX and UI law involved)
+- **Primary law:** [U12 Touch Targets] · **Related:** [L07 Fitts's Law]
 - **Evidence** (`measured` / `observed` / `inferred`): [what you found, with numbers]
 - **Impact:** [what it costs the user]
 - **Fix:** [one concrete change, with target value]
 
 ### 5. Results by component
 
-| ID | Component | Laws checked | PASS | WARN | FAIL | Not tested | Findings |
-|---|---|---|---|---|---|---|---|
-| S1-C1 | [Top navigation] | [L10, L11, L26, L07, U02, U08, U12, U13] | [6] | [1] | [1] | [0] | [F-04] |
+Every component in the inventory, with its worst status. A law not listed for a component passed or did not apply.
+
+| ID | Component | Result | Failed | Warned | Not tested | Findings |
+|---|---|---|---|---|---|---|
+| S1-C1 | [Top navigation] | [FAIL] | [U12] | [L10] | [-] | [F-04, F-09] |
+| S1-C2 | [Hero call to action] | [PASS] | [-] | [-] | [-] | [-] |
 
 ### 6. Law coverage
 
-Every law in both sets, each with a status. FAIL = a Critical or High finding cites the law; WARN = only Medium or Low findings cite it; PASS = checked, no findings; otherwise N/A or NOT TESTED. Component and flow findings both count.
+Every law in both sets, each with a status. FAIL = it is the primary law of a finding that breaks a firm threshold or is rated High or Critical. WARN = it is the primary law of a lesser finding, or is named only as a related law. PASS = checked, no finding names it. Otherwise N/A or NOT TESTED. Component and flow findings both count.
 
 #### 6a. Laws of UX
 
@@ -1483,9 +1523,9 @@ Every law in both sets, each with a status. FAIL = a Critical or High finding ci
 
 ### 7. Flows
 
-| Flow | Steps | Result | Findings |
+| Flow | Size | Result | Findings |
 |---|---|---|---|
-| [Sign up] | [5 screens, 14 fields] | [Completed / blocked at step 3] | [F-02, F-07] |
+| [Sign up] | [5 screens, 14 fields, 6 actions] | [Completed / blocked at step 3] | [F-02, F-07] |
 
 ### 8. Functional notes
 

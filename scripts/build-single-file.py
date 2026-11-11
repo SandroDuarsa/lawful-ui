@@ -35,7 +35,7 @@ chunks = [
     "",
     "> This is lawful-ui as a single file. Paste it into a chat, or reference it from your agent's instruction file.",
     "> Wherever the text names a file (`references/laws.md`, `assets/report-template.md`, and so on), that file is",
-    "> included below as a part of this document. The two measuring scripts are not included; get them from",
+    "> included below as a part of this document. The measuring scripts are not included; get them from",
     "> https://github.com/SandroDuarsa/lawful-ui/tree/main/skills/lawful-ui/scripts or measure by hand.",
     "",
     "# Part 1: Workflow",

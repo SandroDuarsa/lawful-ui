@@ -2,7 +2,7 @@
 
 Find the component type, apply the listed laws, and run the checks. Law IDs (L01 to L30) refer to the UX laws in `laws.md`. The listed laws are the ones that most often matter for that component; apply any other law that is clearly relevant too.
 
-This file covers the UX laws. Every component is also checked against the UI laws (U01 to U20): the table at the top of `ui-laws.md` says which ones apply to each component type.
+This file covers the UX laws. Every component is also checked against the UI laws (U01 to U20): the table at the top of `ui-laws.md` says which ones apply to each component type, and which are judged once per screen.
 
 A component that fits no type here still gets tested: pick the closest type and reason from the laws directly.
 
@@ -203,7 +203,7 @@ Run these once per screen, after the components. Record the results on the scree
 
 ## Flow-level checks
 
-Walk each main task from start to finish and record the steps, taps, and seconds it takes. Flow results count toward each law's status in the coverage table, and their findings are written up like any other, citing the flow instead of a component.
+Walk each main task from start to finish and record its size: screens, fields, and actions needed. Record time only when a person performed it; seconds under automation mean nothing. Flow results count toward each law's status in the coverage table, and their findings are written up like any other, citing the flow instead of a component.
 
 | Check | Laws |
 |---|---|

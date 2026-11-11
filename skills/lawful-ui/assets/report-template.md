@@ -1,6 +1,7 @@
 # UX and UI Laws Test Report: [product or screen name]
 
-<!-- Write the whole report in the user's language. Keep law names in English so they can be looked up. -->
+<!-- Write the report in the user's language: translate headings and prose. Keep in English: law names and IDs,
+     status words (PASS, WARN, FAIL, N/A, NOT TESTED), severity words, and evidence tags. -->
 
 **Date:** [date] · **Platform:** [web / Android / iOS / ...] · **Tested by:** [agent or person]
 
@@ -38,20 +39,23 @@ Ordered by severity. One block per finding.
 ### F-01 [short title]: [Critical / High / Medium / Low]
 
 - **Component:** [S1-C2, name] · **Where:** [selector, file:line, or screenshot region]
-- **Law:** [L07 Fitts's Law, U12 Touch Targets] (every UX and UI law involved)
+- **Primary law:** [U12 Touch Targets] · **Related:** [L07 Fitts's Law]
 - **Evidence** (`measured` / `observed` / `inferred`): [what you found, with numbers]
 - **Impact:** [what it costs the user]
 - **Fix:** [one concrete change, with target value]
 
 ## 5. Results by component
 
-| ID | Component | Laws checked | PASS | WARN | FAIL | Not tested | Findings |
-|---|---|---|---|---|---|---|---|
-| S1-C1 | [Top navigation] | [L10, L11, L26, L07, U02, U08, U12, U13] | [6] | [1] | [1] | [0] | [F-04] |
+Every component in the inventory, with its worst status. A law not listed for a component passed or did not apply.
+
+| ID | Component | Result | Failed | Warned | Not tested | Findings |
+|---|---|---|---|---|---|---|
+| S1-C1 | [Top navigation] | [FAIL] | [U12] | [L10] | [-] | [F-04, F-09] |
+| S1-C2 | [Hero call to action] | [PASS] | [-] | [-] | [-] | [-] |
 
 ## 6. Law coverage
 
-Every law in both sets, each with a status. FAIL = a Critical or High finding cites the law; WARN = only Medium or Low findings cite it; PASS = checked, no findings; otherwise N/A or NOT TESTED. Component and flow findings both count.
+Every law in both sets, each with a status. FAIL = it is the primary law of a finding that breaks a firm threshold or is rated High or Critical. WARN = it is the primary law of a lesser finding, or is named only as a related law. PASS = checked, no finding names it. Otherwise N/A or NOT TESTED. Component and flow findings both count.
 
 ### 6a. Laws of UX
 
@@ -115,9 +119,9 @@ Every law in both sets, each with a status. FAIL = a Critical or High finding ci
 
 ## 7. Flows
 
-| Flow | Steps | Result | Findings |
+| Flow | Size | Result | Findings |
 |---|---|---|---|
-| [Sign up] | [5 screens, 14 fields] | [Completed / blocked at step 3] | [F-02, F-07] |
+| [Sign up] | [5 screens, 14 fields, 6 actions] | [Completed / blocked at step 3] | [F-02, F-07] |
 
 ## 8. Functional notes
 

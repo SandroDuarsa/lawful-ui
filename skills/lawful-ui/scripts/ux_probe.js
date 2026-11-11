@@ -9,7 +9,8 @@
  *   - Any agent browser tool that evaluates JavaScript in the page
  *
  * Run it once per viewport (desktop, then about 375 x 812) and once per screen or state.
- * Field meanings are documented in references/web.md.
+ * Field meanings are documented in references/web.md. If your tool takes only a string of JavaScript,
+ * run scripts/serve.py and load this file by URL instead of pasting it.
  */
 (() => {
   const CAP = 25;            // max rows per list, to keep the output small
@@ -96,6 +97,16 @@
     return { color: over(acc, [255, 255, 255, 1]), uncertain };
   };
 
+  const tally = () => ({ n: {}, ex: {} });
+  const add = (t, k, el) => { t.n[k] = (t.n[k] || 0) + 1; if (!(k in t.ex) && el) t.ex[k] = selectorOf(el); };
+  const topOf = (t, n) => Object.entries(t.n).sort((a, b) => b[1] - a[1]).slice(0, n)
+    .map(([value, count]) => ({ value, count, example: t.ex[value] || null }));
+  const scrollY0 = window.scrollY || 0;
+  const pageBg = over(rgba(style(document.body).backgroundColor), rgba(style(document.documentElement).backgroundColor));
+  const pageBackgroundSet = pageBg[3] >= 0.99;
+  if (!pageBackgroundSet) warnings.push('The page sets no background color. Contrast was computed against white, which is what a ' +
+    'normal browser shows; in a dark webview or embedded pane the text may be unreadable.');
+
   // ---- 1. interactive targets (Fitts) ----
   const INTERACTIVE = 'a[href],button,input:not([type=hidden]),select,textarea,summary,[role=button],[role=link],' +
     '[role=tab],[role=menuitem],[role=checkbox],[role=radio],[role=switch],[onclick],[tabindex]:not([tabindex="-1"])';
@@ -123,10 +134,25 @@
   };
   const below44 = targets.filter(t => !t.inlineLink && t.minSide < 44);
   const sizeIssues = below44.filter(t => t.minSide < (touchLayout ? 44 : 24)).map(t => ({
-    selector: selectorOf(t.el), label: textOf(t.el), width: t.w, height: t.h,
-    level: t.minSide < 24 ? 'fail (<24px)' : 'warn (<44px)',
-    nearestTargetGapPx: nearest(t), labelExtendsHitArea: t.wrappedByLabel
-  })).sort((a, b) => Math.min(a.width, a.height) - Math.min(b.width, b.height));
+    t, level: t.minSide < 24 ? 'fail (<24px)' : 'warn (<44px)', nearestTargetGapPx: nearest(t)
+  }));
+  // Siblings of the same kind (14 nav links, 12 text inputs) become one row with a count.
+  const range = a => { const lo = Math.min(...a), hi = Math.max(...a); return lo === hi ? lo : lo + '-' + hi; };
+  const groups = new Map();
+  sizeIssues.forEach(i => {
+    const el = i.t.el, cls = (el.getAttribute('class') || '').trim().split(/\s+/).filter(Boolean).slice(0, 2).join('.');
+    const sel = (el.parentElement ? selectorOf(el.parentElement) + ' > ' : '') + el.tagName.toLowerCase() + (cls ? '.' + cls : '');
+    const key = sel + '|' + i.level;
+    if (!groups.has(key)) groups.set(key, { selector: sel, level: i.level, items: [] });
+    groups.get(key).items.push(i);
+  });
+  const smallTargetGroups = Array.from(groups.values()).map(g => {
+    const gaps = g.items.map(i => i.nearestTargetGapPx).filter(v => v !== null);
+    return { selector: g.items.length === 1 ? selectorOf(g.items[0].t.el) : g.selector, count: g.items.length,
+      examples: g.items.slice(0, 4).map(i => textOf(i.t.el)), width: range(g.items.map(i => i.t.w)), height: range(g.items.map(i => i.t.h)),
+      level: g.level, smallestGapPx: gaps.length ? Math.min(...gaps) : null,
+      labelExtendsHitArea: g.items.some(i => i.t.wrappedByLabel) };
+  }).sort((a, b) => (a.level > b.level ? 1 : a.level < b.level ? -1 : b.count - a.count));
 
   // ---- 2. choices per decision point (Hick, Choice Overload, Serial Position) ----
   const navs = Array.from(document.querySelectorAll('nav,[role=navigation],[role=tablist],[role=menu],[role=menubar]'))
@@ -156,7 +182,7 @@
     return bg[3] > 0.5 && el.parentElement && contrast(bg, backgroundOf(el.parentElement).color) >= 1.5;
   };
   const emphasized = buttons.filter(t => standsOut(t.el))
-    .map(t => ({ label: textOf(t.el), aboveFold: vh ? (t.r.top < vh && t.r.bottom > 0) : null }));
+    .map(t => ({ label: textOf(t.el), aboveFold: vh ? (t.r.top + scrollY0 < vh) : null }));
 
   // ---- 4. forms (Postel, Parkinson, Proximity, Chunking, Tesler) ----
   const hasLabel = el => !!(el.getAttribute('aria-label') || el.getAttribute('aria-labelledby') || el.closest('label') ||
@@ -178,15 +204,22 @@
   }).filter(f => f.issues.length);
   const forms = Array.from(document.querySelectorAll('form')).filter(isVisible).map(f => {
     const fields = Array.from(f.querySelectorAll(fieldSel)).filter(isVisible);
-    return { selector: selectorOf(f), fieldCount: fields.length, requiredCount: fields.filter(x => x.required).length,
+    const method = (f.getAttribute('method') || 'get').toLowerCase();
+    return { selector: selectorOf(f), method, fieldCount: fields.length, requiredCount: fields.filter(x => x.required).length,
       sections: f.querySelectorAll('fieldset,h2,h3,h4,legend').length,
-      submitButtons: f.querySelectorAll('button:not([type=button]):not([type=reset]),input[type=submit]').length };
+      submitButtons: f.querySelectorAll('button:not([type=button]):not([type=reset]),input[type=submit]').length,
+      resetButtons: f.querySelectorAll('button[type=reset],input[type=reset]').length,
+      passwordSentInUrl: method === 'get' && !!f.querySelector('input[type=password]') };
   }).slice(0, CAP);
+  // Boxes ticked before the user touched anything: check each for a pre-selected cost or consent (dark pattern).
+  const preChecked = Array.from(document.querySelectorAll('input[type=checkbox]')).filter(c => c.defaultChecked && isVisible(c))
+    .map(c => ({ selector: selectorOf(c), label: textOf(c) })).slice(0, CAP);
 
   // ---- 5. text: contrast, size, line length, walls of text (Cognitive Load, Chunking) ----
   const contrastFails = new Map(), smallText = new Map(), longLines = [], walls = [];
-  const fontSizes = {}, fontFamilies = {}, textColors = {}, tightLines = [];
-  let scanned = 0, minInset = Infinity;
+  const fontSizes = {}, fontFamilies = {}, textColors = tally(), edges = tally(), tightLines = [];
+  let scanned = 0, minInset = Infinity, minInsetEl = null;
+  const edgeBlocks = new Set();
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   const seenEl = new Set();
   for (let node = walker.nextNode(); node && scanned < MAX_NODES; node = walker.nextNode()) {
@@ -200,9 +233,16 @@
     fontFamilies[fam] = (fontFamilies[fam] || 0) + 1;
     if (size < 12) { const k = size + 'px'; if (!smallText.has(k)) smallText.set(k, { fontSize: k, selector: selectorOf(el), sample: txt.slice(0, 40) }); }
     const fg0 = rgba(s.color), bg = backgroundOf(el), fg = over(fg0, bg.color);
-    textColors[hex(fg)] = (textColors[hex(fg)] || 0) + 1;
+    add(textColors, hex(fg), el);
     const left = rectOf(el).left + parseFloat(s.paddingLeft) + parseFloat(s.borderLeftWidth);
-    if (left >= 0 && left < minInset) minInset = left;
+    if (left >= 0 && left < minInset) { minInset = left; minInsetEl = el; }
+    // Alignment: the content edge of the block that holds this text (a nav bar counts once, not once per link).
+    let block = el; while (block.parentElement && /^inline/.test(style(block).display)) block = block.parentElement;
+    if (!edgeBlocks.has(block) && !block.closest('button,select,label')) {
+      edgeBlocks.add(block);
+      const bs = style(block);
+      add(edges, Math.round(rectOf(block).left + parseFloat(bs.paddingLeft) + parseFloat(bs.borderLeftWidth)), block);
+    }
     const ratio = contrast(fg, bg.color), need = (size >= 24 || (size >= 18.66 && bold)) ? 3 : 4.5;
     if (ratio < need) {
       const k = hex(fg) + hex(bg.color) + need;
@@ -215,7 +255,8 @@
     const len = (el.innerText || '').trim().length; if (len < 120) return;
     const s = style(el), r = rectOf(el), size = parseFloat(s.fontSize);
     const lh = parseFloat(s.lineHeight) || size * 1.2, lines = Math.max(1, Math.round(r.height / lh)), cpl = Math.round(len / lines);
-    if (cpl > 90) longLines.push({ selector: selectorOf(el), charsPerLine: cpl, lines });
+    if (cpl > 90) longLines.push({ selector: selectorOf(el), charsPerLine: cpl, lines,
+      widerThanViewport: vw ? r.width > vw : null });
     if (len > 600) walls.push({ selector: selectorOf(el), characters: len, lines });
     const ratio = s.lineHeight === 'normal' ? null : parseFloat(s.lineHeight) / size;
     if (lines >= 3 && (ratio === null || ratio < 1.3)) tightLines.push({ selector: selectorOf(el),
@@ -226,29 +267,32 @@
   const headings = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6')).filter(isVisible)
     .map(h => ({ level: +h.tagName[1], text: textOf(h) }));
   let fixedOrSticky = 0, checked = 0, moving = 0;
-  const spacing = {}, bgColors = {}, radii = {}, shadows = {};
-  const bump = (map, k) => { map[k] = (map[k] || 0) + 1; };
+  const spacing = tally(), bgColors = tally(), radii = tally(), shadows = tally(), fieldWidths = tally();
   for (const el of document.body.querySelectorAll('*')) {
     if (++checked > MAX_NODES) break;
     if (/^(SCRIPT|STYLE|NOSCRIPT|OPTION|BR)$/.test(el.tagName) || !isVisible(el)) continue;
     const cs = style(el);
     if (cs.position === 'fixed' || cs.position === 'sticky') fixedOrSticky++;
+    const used = new Set();   // each value once per element, so four equal paddings do not count four times
     ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 'rowGap', 'columnGap']
-      .forEach(k => { const v = parseFloat(cs[k]); if (v > 2 && v < 200) bump(spacing, round(v)); });
-    const bgc = rgba(cs.backgroundColor); if (bgc[3] > 0.5) bump(bgColors, hex(bgc));
-    if (cs.borderTopLeftRadius !== '0px') bump(radii, cs.borderTopLeftRadius);
-    if (cs.boxShadow && cs.boxShadow !== 'none') bump(shadows, cs.boxShadow);
+      .forEach(k => { const v = parseFloat(cs[k]); if (v > 2 && v < 200) used.add(round(v)); });
+    used.forEach(v => add(spacing, v, el));
+    const bgc = rgba(cs.backgroundColor), hasBorder = parseFloat(cs.borderTopWidth) > 0 && cs.borderTopStyle !== 'none';
+    if (bgc[3] > 0.5) add(bgColors, hex(bgc), el);
+    if ((bgc[3] > 0.5 || hasBorder) && el !== document.body) add(radii, cs.borderTopLeftRadius, el);   // boxes only, square ones included
+    if (cs.boxShadow && cs.boxShadow !== 'none') add(shadows, cs.boxShadow, el);
     if ((cs.transitionDuration && !/^(0s(, )?)+$/.test(cs.transitionDuration)) || (cs.animationName && cs.animationName !== 'none')) moving++;
   }
-  const top = (map, n) => Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, n).map(([value, count]) => ({ value, count }));
-  const spacingTotal = Object.values(spacing).reduce((a, b) => a + b, 0);
-  const offScale = Object.entries(spacing).filter(([v]) => Number(v) % 4 !== 0);
+  const spacingTotal = Object.values(spacing.n).reduce((a, b) => a + b, 0);
+  const offScale = Object.entries(spacing.n).filter(([v]) => Number(v) % 4 !== 0);
   const offScaleCount = offScale.reduce((a, [, c]) => a + c, 0);
 
-  // alignment: left edges shared by block-level content (Alignment and Grid)
-  const edges = {};
-  Array.from(document.querySelectorAll('h1,h2,h3,h4,p,ul,ol,input:not([type=hidden]):not([type=checkbox]):not([type=radio]),select,textarea'))
-    .filter(isVisible).slice(0, 800).forEach(el => bump(edges, Math.round(rectOf(el).left)));
+  // alignment: images and fields join the text blocks collected above; field widths show ragged right edges
+  Array.from(document.querySelectorAll('img,input:not([type=hidden]):not([type=checkbox]):not([type=radio]),select,textarea'))
+    .filter(isVisible).slice(0, 800).forEach(el => {
+      add(edges, Math.round(rectOf(el).left), el);
+      if (el.tagName !== 'IMG') add(fieldWidths, Math.round(rectOf(el).width), el);
+    });
 
   // stylesheets: removed focus outlines, reduced-motion and dark-mode support
   const focusRemoved = []; let reducedMotionRule = false, colorSchemeRule = false, unreadableSheets = 0;
@@ -292,6 +336,7 @@
   if (overflowX && touchLayout) warnings.push('Content is ' + overflowX + 'px wider than the viewport; phones will zoom out or scroll sideways.');
   const nav = performance.getEntriesByType('navigation')[0];
   const paint = name => { const e = performance.getEntriesByName(name)[0]; return e ? Math.round(e.startTime) : null; };
+  if (paint('first-contentful-paint') === null) warnings.push('No paint timing was recorded (background or embedded tab); firstContentfulPaint is null.');
 
   return {
     page: { url: location.origin + location.pathname, title: document.title, viewport: vw + 'x' + vh, touchLayout,
@@ -299,45 +344,49 @@
     warnings,
     summary: {
       interactiveTargets: targets.length,
-      targetsBelow24px: sizeIssues.filter(t => t.level.startsWith('fail')).length,
+      targetsBelow24px: sizeIssues.filter(i => i.level.startsWith('fail')).length,
       targetsBelow44px: below44.length,
-      crowdedSmallTargets: sizeIssues.filter(t => t.nearestTargetGapPx !== null && t.nearestTargetGapPx < 8).length,
+      crowdedSmallTargets: sizeIssues.filter(i => i.nearestTargetGapPx !== null && i.nearestTargetGapPx < 8).length,
       navigationGroups: navs.length, largestNavItemCount: navs.reduce((m, n) => Math.max(m, n.itemCount), 0),
       buttons: buttons.length, distinctButtonStyles: Object.keys(styleGroups).length, emphasizedButtons: emphasized.length,
       emphasizedButtonsAboveFold: vh ? emphasized.filter(b => b.aboveFold).length : null,
-      formFields: allFields.length, fieldsWithIssues: fieldIssues.length,
+      formFields: allFields.length, fieldsWithIssues: fieldIssues.length, preCheckedCheckboxes: preChecked.length,
+      formsSendingPasswordInUrl: forms.filter(f => f.passwordSentInUrl).length,
       contrastFailures: contrastFails.size, textBelow12px: smallText.size,
       distinctFontSizes: Object.keys(fontSizes).length, distinctFontFamilies: Object.keys(fontFamilies).length,
       h1Count: headings.filter(h => h.level === 1).length, wallsOfText: walls.length, linesOver90Chars: longLines.length,
       fixedOrStickyElements: fixedOrSticky, runningAnimations: document.getAnimations ? document.getAnimations().length : null,
-      distinctSpacingValues: Object.keys(spacing).length,
+      distinctSpacingValues: Object.keys(spacing.n).length,
       spacingOffScalePercent: spacingTotal ? Math.round(offScaleCount / spacingTotal * 100) : null,
-      distinctTextColors: Object.keys(textColors).length, distinctBackgroundColors: Object.keys(bgColors).length,
-      distinctCornerRadii: Object.keys(radii).length, distinctShadows: Object.keys(shadows).length,
-      distinctLeftEdges: Object.keys(edges).length, tightLineHeightBlocks: tightLines.length,
+      distinctTextColors: Object.keys(textColors.n).length, distinctBackgroundColors: Object.keys(bgColors.n).length,
+      distinctCornerRadii: Object.keys(radii.n).length, distinctShadows: Object.keys(shadows.n).length,
+      distinctLeftEdges: Object.keys(edges.n).length, distinctFieldWidths: Object.keys(fieldWidths.n).length,
+      tightLineHeightBlocks: tightLines.length, pageBackgroundSet,
       focusOutlineRemovedRules: focusRemoved.length, imagesWithIssues: imageIssues.length, zoomBlocked
     },
     timingMs: nav ? { firstByte: Math.round(nav.responseStart), firstContentfulPaint: paint('first-contentful-paint'),
       domContentLoaded: Math.round(nav.domContentLoadedEventEnd), load: Math.round(nav.loadEventEnd) } : null,
-    smallTargets: sizeIssues.slice(0, CAP),
+    smallTargets: smallTargetGroups.slice(0, CAP),
     navigation: navs, selects, radioGroups,
     buttonStyles,
     emphasizedButtons: emphasized.slice(0, CAP),
-    forms, fieldIssues: fieldIssues.slice(0, CAP),
+    forms, preCheckedCheckboxes: preChecked, fieldIssues: fieldIssues.slice(0, CAP),
     contrastFailures: Array.from(contrastFails.values()).sort((a, b) => a.ratio - b.ratio).slice(0, CAP),
     smallText: Array.from(smallText.values()).slice(0, CAP),
     fontSizesPx: fontSizes, fontFamilies,
     longLines: longLines.slice(0, CAP), wallsOfText: walls.slice(0, CAP),
     headings: headings.slice(0, 40),
     ui: {
-      spacing: { topValuesPx: top(spacing, 12), offScaleValuesPx: offScale.sort((a, b) => b[1] - a[1]).slice(0, 10).map(([value, count]) => ({ value: Number(value), count })) },
-      leftEdgesPx: top(edges, 10),
-      textColors: top(textColors, 12), backgroundColors: top(bgColors, 12),
-      cornerRadii: top(radii, 10), shadows: top(shadows, 6).map(x => ({ value: x.value.slice(0, 70), count: x.count })),
+      pageBackgroundSet,
+      spacing: { topValuesPx: topOf(spacing, 12),
+        offScaleValuesPx: offScale.sort((x, y) => y[1] - x[1]).slice(0, 10).map(([value, count]) => ({ value: Number(value), count, example: spacing.ex[value] || null })) },
+      leftEdgesPx: topOf(edges, 10), fieldWidthsPx: topOf(fieldWidths, 8),
+      textColors: topOf(textColors, 12), backgroundColors: topOf(bgColors, 12),
+      cornerRadii: topOf(radii, 10), shadows: topOf(shadows, 6).map(x => ({ value: x.value.slice(0, 70), count: x.count, example: x.example })),
       tightLineHeight: tightLines.slice(0, CAP),
-      minTextInsetLeftPx: minInset === Infinity ? null : round(minInset),
+      minTextInsetLeftPx: minInset === Infinity ? null : round(minInset), minTextInsetAt: minInsetEl ? selectorOf(minInsetEl) : null,
       focus: { outlineRemovedWithoutReplacement: focusRemoved, unreadableStylesheets: unreadableSheets },
-      motion: { elementsWithTransitionOrAnimation: moving, hasReducedMotionRule: reducedMotionRule },
+      motion: { elementsWithTransitionOrAnimation: moving, hasReducedMotionRule: moving ? reducedMotionRule : null },
       theme: { hasColorSchemeRule: colorSchemeRule },
       images: imageIssues.slice(0, CAP),
       viewportMeta: vpContent, zoomBlocked

@@ -2,7 +2,7 @@
   "name": "lawful-ui",
   "displayName": "lawful-ui",
   "description": "lawful-ui: make your UI obey the law. Tests web and mobile interfaces against 30 Laws of UX and 20 Laws of UI and reports every violation with evidence.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "SandroDuarsa"
   },

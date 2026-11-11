@@ -56,9 +56,11 @@ The inventory is what makes the test complete. A component that is not in the in
 
 ### 3. Measure
 
-Collect numbers before forming opinions. On web, run `scripts/ux_probe.js` at a desktop viewport and at a phone viewport (about 375 × 812). On Android, dump the view hierarchy and run `scripts/android_targets.py`. Elsewhere, measure from screenshots or read values from code.
+Collect numbers before forming opinions. On web, run `scripts/ux_probe.js` at a desktop viewport and at a phone viewport (about 375 × 812), and use `scripts/ux_checks.js` for the checks that need interaction (dead controls, focus, state styles). On Android, dump the view hierarchy and run `scripts/android_targets.py`. Elsewhere, measure from screenshots or read values from code. You do not need to read the scripts' source: the platform guide documents how to run them and what every output field means.
 
 Exercise the states, not just the resting screen: hover, focus, pressed, disabled, loading, empty, error, and long or unusual content.
+
+Temporary measuring aids are fine: an injected style to view the page in grayscale, an event listener to time a click, a different viewport size. They must disappear on reload, and you reload before measuring anything else. Never change the product's code, content, or saved data in order to test it.
 
 ### 4. Evaluate each component against its laws
 
@@ -67,15 +69,20 @@ For each component, apply both sets:
 - **UX laws:** look up the component type in `references/components.md` to see which laws apply and what to check. Use `references/laws.md` for the pass / fail criteria.
 - **UI laws:** use the table "Which UI laws apply to which component" at the top of `references/ui-laws.md`, then the criteria below it.
 
-When one defect touches both sets (a 16 px icon button fails L07 Fitts's Law and U12 Touch Targets), write one finding and cite both laws.
+One defect is one finding, however many laws it touches. Give each finding:
 
-Give every component-law pair one status:
+- a **primary law**: the single law that best explains the harm to the user;
+- **related laws**: any others it also breaks (a 16 px icon button has U12 Touch Targets as primary and L07 Fitts's Law as related, or the reverse; pick one).
 
+Give every check (a component against a law, or a flow against a law) one status:
+
+- **FAIL**: the check found a problem that breaks a firm threshold (the WCAG and platform numbers in `laws.md` and `ui-laws.md`), or that you rate High or Critical.
+- **WARN**: the check found a problem rated Medium or Low that breaks no firm threshold.
 - **PASS**: meets the criteria, with evidence.
-- **WARN**: works, but is weaker than it should be, or sits near a threshold.
-- **FAIL**: violates the law in a way that will cost users time, errors, or trust.
-- **N/A**: the law does not apply to this component.
+- **N/A**: the law does not apply here.
 - **NOT TESTED**: it applies, but you could not verify it with the access you had. Say what would be needed.
+
+Check everything that applies, but only write down what is not a PASS. The report lists each component with its worst status and the laws that failed or warned; a law not listed for a component passed or did not apply.
 
 ### 5. Evaluate the flows
 
@@ -83,13 +90,13 @@ Some laws only show up across a journey, not on a single component: Doherty Thre
 
 ### 6. Report
 
-Write the report using `assets/report-template.md`. Write it in the language the user is using. Save it as a file when you can write files; otherwise put it in the reply.
+Write the report using `assets/report-template.md`. Write it in the language the user is using: translate the headings and the prose, and keep these in English so they can be looked up: law names and IDs, status words (PASS, WARN, FAIL, N/A, NOT TESTED), severity words, and evidence tags. Save it as a file when you can write files; otherwise put it in the reply.
 
-Every one of the 30 UX laws and 20 UI laws appears in its coverage table with a status, even if the status is N/A or NOT TESTED, so the reader can see nothing was skipped. The status of a law follows from its findings, component-level and flow-level alike, so that two testers reach the same result:
+Every one of the 30 UX laws and 20 UI laws appears in its coverage table with a status, even if the status is N/A or NOT TESTED, so the reader can see nothing was skipped. A law's status comes from the findings that name it, so that two testers reach the same table:
 
-- FAIL: at least one Critical or High finding cites the law.
-- WARN: only Medium or Low findings cite it.
-- PASS: it was checked and no finding cites it.
+- FAIL: a finding has it as **primary law** and that finding is a FAIL (firm threshold broken, or High or Critical).
+- WARN: a finding has it as primary law and is a WARN; or findings name it only as a related law.
+- PASS: it was checked and no finding names it.
 - N/A or NOT TESTED: as defined above.
 
 Report two scores, one per coverage table: UX score and UI score, each (PASS + 0.5 × WARN) ÷ (PASS + WARN + FAIL) × 100. They exist to compare one run with the next on the same product.
@@ -119,10 +126,12 @@ The UX laws are heuristics drawn from psychology, not a compliance standard. The
 
 | Severity | Meaning |
 |---|---|
-| Critical | Blocks a main task, destroys saved data, or tricks the user into paying or sharing something they did not choose |
+| Critical | Blocks a main task (a user following the obvious path cannot finish it), destroys saved data, or tricks the user into paying or sharing something they did not choose |
 | High | Main task is still possible but slow, error-prone, or confusing for most users; loses unsaved input; pressures the user without costing them money or data |
 | Medium | Friction on a secondary task, or a main-task issue only some users will meet |
 | Low | Polish; noticeable but cheap to live with |
+
+When the cause of a problem is functional (a button with no handler, a form with no backend), write what the user experiences as a law finding and the cause as a functional note, and point each at the other. Do not write the same thing twice.
 
 A heuristic audit finds likely problems. It does not replace watching real users, and the report should say so in one line.
 
@@ -135,6 +144,8 @@ A heuristic audit finds likely problems. It does not replace watching real users
 | `references/components.md` | Mapping a component type or a flow to the UX laws and checks that apply |
 | `references/web.md` | Testing a website or web app; explains the probe output |
 | `references/mobile.md` | Testing Android, iOS, Flutter, or React Native |
-| `scripts/ux_probe.js` | Measuring a web page (paste into any browser automation or the console) |
+| `scripts/ux_probe.js` | Measuring a web page; read-only |
+| `scripts/ux_checks.js` | Interactive web checks: dead controls, focus visibility, state styles, grayscale and text-spacing aids |
+| `scripts/serve.py` | Serving the scripts on localhost for browser tools that take only a string of JavaScript |
 | `scripts/android_targets.py` | Measuring tap targets from an Android view-hierarchy dump |
 | `assets/report-template.md` | Writing the report |

@@ -42,7 +42,7 @@ From a run against the demo page in this repository:
 - Fix: make "Daftar Sekarang" the only submit button, at least 44 px tall; remove "OK" and "Lanjut".
 ```
 
-The full report also has a component inventory, results per component, a coverage table for all 50 laws, a UX score and a UI score, flow results, functional notes, a fix order, and a list of what could not be tested and why.
+The full report also has a component inventory, results per component, a coverage table for all 50 laws, a UX score and a UI score, flow results, functional notes, a fix order, and a list of what could not be tested and why. A complete one is in [`demo/sample-report.md`](demo/sample-report.md): 23 findings on the demo page, written in Indonesian because the request was.
 
 ## The laws
 
@@ -142,7 +142,7 @@ read skills/lawful-ui/SKILL.md before you start and follow it.
 
 ### The single file
 
-[`lawful-ui.md`](lawful-ui.md) is the whole skill in one file, for pasting into a chat window. It leaves out the two measuring scripts.
+[`lawful-ui.md`](lawful-ui.md) is the whole skill in one file, for pasting into a chat window. It leaves out the measuring scripts.
 
 ```bash
 curl -o lawful-ui.md https://raw.githubusercontent.com/SandroDuarsa/lawful-ui/main/lawful-ui.md
@@ -167,7 +167,8 @@ On a live production site the skill tells the agent to stay with actions that ch
 
 | Platform | How |
 |---|---|
-| Web | [`ux_probe.js`](skills/lawful-ui/scripts/ux_probe.js) runs in the page through any browser automation (Playwright, Puppeteer, Selenium, an agent's browser tool, or the console). It only reads the page. It reports target sizes, crowding, contrast failures, choices per navigation and select, button styles, form-field problems, spacing scale, palette, radii, line height, removed focus outlines, image problems, blocked zoom, and load timing. |
+| Web | [`ux_probe.js`](skills/lawful-ui/scripts/ux_probe.js) runs in the page through any browser automation (Playwright, Puppeteer, Selenium, an agent's browser tool, or the console). It only reads the page. It reports target sizes, crowding, contrast failures, choices per navigation and select, button styles, form-field problems, pre-ticked boxes, passwords sent in the URL, spacing scale, alignment edges, palette, radii, line height, removed focus outlines, image problems, blocked zoom, and load timing, each with a selector so it can be located. |
+| Web, interactive | [`ux_checks.js`](skills/lawful-ui/scripts/ux_checks.js) covers what reading alone cannot: whether a click does anything (dead controls), which tab stops lose their focus outline, which state styles exist, and temporary grayscale and text-spacing views. [`serve.py`](skills/lawful-ui/scripts/serve.py) serves both scripts on localhost for browser tools that accept only a string of JavaScript. |
 | Android | [`android_targets.py`](skills/lawful-ui/scripts/android_targets.py) reads a `uiautomator` dump and reports tap targets under 48 dp, crowded neighbours, and unlabeled controls. |
 | iOS, Flutter, React Native | Guidance for measuring from screenshots, the accessibility tree, and source code. No script yet. |
 
@@ -199,11 +200,11 @@ Then ask your agent: `test http://127.0.0.1:8765/violations.html`.
 | `skills/lawful-ui/references/ui-laws.md` | The 20 Laws of UI as test criteria |
 | `skills/lawful-ui/references/components.md` | Checklists per component type and per flow |
 | `skills/lawful-ui/references/web.md`, `mobile.md` | How to measure on each platform |
-| `skills/lawful-ui/scripts/` | The two measuring scripts |
+| `skills/lawful-ui/scripts/` | The measuring scripts |
 | `skills/lawful-ui/assets/report-template.md` | The report template |
 | `rules/` | A short pointer for agents that load rules instead of skills |
 | `lawful-ui.md` | The single-file version, built by `scripts/build-single-file.py` |
-| `demo/` | The demo page and a sample Android dump |
+| `demo/` | The demo page, a full sample report, and a sample Android dump |
 | `assets/` | Logo and banner (SVG sources and PNG renders) |
 
 ## Credits
