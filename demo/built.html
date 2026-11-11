@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<!--
+  Written by an AI agent with lawful-ui installed, from this one request and nothing else:
+  "buatkan halaman pendaftaran akun untuk toko online namanya TokoKita. satu file HTML aja
+   (CSS dan JS di dalamnya), field: nama, email, no HP, kata sandi. warna utama biru."
+  The request did not mention the skill or UX; Build mode loaded on its own. The agent also had other
+  UI skills installed. Unedited. Compare it with violations.html, the same kind of page built badly.
+-->
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#1546C2">
+<title>Daftar akun | TokoKita</title>
+<style>
+  :root {
+    color-scheme: light dark;
+
+    --biru: #1546C2;
+    --aksen: #FFC53D;
+
+    --latar: #EAF0FA;
+    --permukaan: #FFFFFF;
+    --kolom: #FFFFFF;
+    --tinta: #101B33;
+    --redup: #4D5A73;
+    --garis: #7A869C;
+
+    --aksi: #1546C2;
+    --aksi-hover: #0F3594;
+    --aksi-tekan: #0B2A78;
+    --aksi-teks: #FFFFFF;
+    --fokus: #1546C2;
+
+    --galat: #B3261E;
+    --galat-latar: #FDECEA;
+    --sukses: #1B6E3C;
+    --nonaktif: #DDE3EE;
+    --nonaktif-teks: #4D5A73;
+
+    --r-kontrol: 8px;
+    --r-kartu: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --latar: #0B1220;
+      --permukaan: #131C2E;
+      --kolom: #0B1220;
+      --tinta: #E8EDF7;
+      --redup: #A9B4C8;
+      --garis: #7C89A1;
+
+      --aksi: #8FB4FF;
+      --aksi-hover: #B4CCFF;
+      --aksi-tekan: #D2E0FF;
+      --aksi-teks: #0B1220;
+      --fokus: #8FB4FF;
+
+      --galat: #FF9A93;
+      --galat-latar: #3A1614;
+      --sukses: #7FD6A0;
+      --nonaktif: #2A3550;
+      --nonaktif-teks: #A9B4C8;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  [hidden] { display: none !important; }
+
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--permukaan);
+    color: var(--tinta);
+    /* Font sistem: tampil seketika di HP dan koneksi lambat, tanpa unduhan font. */
+    font: 400 1rem/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .halaman { background: var(--permukaan); }
+
+  /* Pita merek dengan tepi bawah bergelombang, seperti kanopi depan toko. */
+  .pita {
+    position: relative;
+    background: var(--biru);
+    padding: 16px;
+  }
+  .pita::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 8px;
+    background: radial-gradient(circle at 8px 0, var(--biru) 7.5px, transparent 8px) center top / 16px 8px repeat-x;
+  }
+  .merek {
+    margin: 0;
+    font-size: 1.375rem;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #FFFFFF;
+  }
+  .merek span { color: var(--aksen); }
+
+  .isi { padding: 32px 16px 48px; }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.5rem, 1.25rem + 1.2vw, 1.75rem);
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  h1:focus-visible { outline: 3px solid var(--fokus); outline-offset: 4px; border-radius: 4px; }
+
+  .pengantar { margin: 8px 0 0; color: var(--redup); }
+
+  form { margin-top: 24px; }
+
+  .grup + .grup { margin-top: 24px; }
+
+  label { display: block; margin-bottom: 8px; font-weight: 600; }
+
+  input {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    font: inherit;
+    color: var(--tinta);
+    background: var(--kolom);
+    border: 1px solid var(--garis);
+    border-radius: var(--r-kontrol);
+    transition: border-color 150ms ease;
+  }
+  input:hover { border-color: var(--tinta); }
+  input:focus-visible {
+    border-color: var(--fokus);
+    outline: 3px solid var(--fokus);
+    outline-offset: 2px;
+  }
+  input[aria-invalid="true"] {
+    border-color: var(--galat);
+    box-shadow: 0 0 0 1px var(--galat);
+  }
+
+  .petunjuk { margin: 8px 0 0; font-size: 0.875rem; color: var(--redup); }
+
+  .galat {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin: 8px 0 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--galat);
+  }
+
+  .ikon { flex: none; width: 20px; height: 20px; fill: currentColor; }
+
+  .baris-sandi { display: flex; gap: 8px; }
+  .baris-sandi input { flex: 1; min-width: 0; }
+
+  button, .tombol {
+    min-height: 48px;
+    padding: 12px 16px;
+    font: inherit;
+    font-weight: 600;
+    border-radius: var(--r-kontrol);
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+  button:focus-visible, .tombol:focus-visible {
+    outline: 3px solid var(--fokus);
+    outline-offset: 2px;
+  }
+
+  .tombol-utama {
+    display: block;
+    width: 100%;
+    margin-top: 32px;
+    color: var(--aksi-teks);
+    background: var(--aksi);
+    border: 0;
+    text-align: center;
+    text-decoration: none;
+  }
+  .tombol-utama:hover { background: var(--aksi-hover); }
+  .tombol-utama:active { background: var(--aksi-tekan); }
+  .tombol-utama:disabled {
+    color: var(--nonaktif-teks);
+    background: var(--nonaktif);
+    cursor: progress;
+  }
+
+  .tombol-kedua {
+    color: var(--aksi);
+    background: transparent;
+    border: 1px solid var(--garis);
+  }
+  .tombol-kedua:hover { border-color: var(--aksi); background: var(--latar); }
+  .tombol-kedua:active { border-color: var(--aksi); background: var(--nonaktif); }
+
+  #tombol-lihat { flex: none; min-width: 7.5rem; }
+
+  .catatan { margin: 16px 0 0; font-size: 0.875rem; color: var(--redup); }
+
+  .peringatan {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-top: 24px;
+    padding: 12px 16px;
+    color: var(--tinta);
+    background: var(--galat-latar);
+    border: 1px solid var(--galat);
+    border-radius: var(--r-kontrol);
+  }
+  .peringatan .ikon { margin-top: 2px; color: var(--galat); }
+  .peringatan p { margin: 0; }
+
+  .berhasil-judul { display: flex; gap: 12px; align-items: flex-start; }
+  .berhasil-judul .ikon { width: 32px; height: 32px; color: var(--sukses); }
+  #berhasil-isi { margin: 16px 0 0; overflow-wrap: anywhere; }
+  #bagian-berhasil .tombol-utama,
+  #bagian-berhasil .tombol-kedua { margin-top: 24px; }
+  #bagian-berhasil .tombol-kedua { display: block; width: 100%; }
+
+  .hanya-pembaca {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Mulai 512px, kolom 480px muat dengan jarak tepi 16px: formulir menjadi kartu di atas latar biru muda. */
+  @media (min-width: 512px) {
+    body { background: var(--latar); padding: 48px 16px; }
+    .halaman { max-width: 480px; margin: 0 auto; border-radius: var(--r-kartu); }
+    .pita { padding: 16px 32px; border-radius: var(--r-kartu) var(--r-kartu) 0 0; }
+    .isi { padding: 32px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    input, button, .tombol { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<svg hidden aria-hidden="true">
+  <symbol id="ikon-galat" viewBox="0 0 20 20">
+    <path fill-rule="evenodd" d="M10 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17ZM9 5.5h2v6H9v-6Zm0 7.5h2v2H9v-2Z"/>
+  </symbol>
+  <symbol id="ikon-sukses" viewBox="0 0 20 20">
+    <path fill-rule="evenodd" d="M10 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17ZM8.8 13.7l-3.3-3.3 1.4-1.4 1.9 1.9 4.3-4.3 1.4 1.4-5.7 5.7Z"/>
+  </symbol>
+</svg>
+
+<div class="halaman">
+  <header class="pita">
+    <!-- Logo sementara: nama toko sebagai teks. Ganti dengan logo asli TokoKita bila sudah ada. -->
+    <p class="merek">Toko<span>Kita</span></p>
+  </header>
+
+  <main class="isi">
+    <section id="bagian-form">
+      <h1>Buat akun</h1>
+      <p class="pengantar">Isi empat data ini untuk mulai belanja di TokoKita. Semua wajib diisi.</p>
+
+      <noscript>
+        <div class="peringatan">
+          <p>Formulir ini memerlukan JavaScript. Aktifkan JavaScript di browser untuk mendaftar.</p>
+        </div>
+      </noscript>
+
+      <div class="peringatan" id="galat-kirim" role="alert" hidden>
+        <svg class="ikon" aria-hidden="true"><use href="#ikon-galat"/></svg>
+        <p id="galat-kirim-teks"></p>
+      </div>
+
+      <form id="form-daftar" method="post" novalidate>
+        <div class="grup">
+          <label for="nama">Nama lengkap</label>
+          <input id="nama" name="nama" type="text" autocomplete="name" autocapitalize="words" required aria-describedby="galat-nama">
+          <p class="galat" id="galat-nama" hidden><svg class="ikon" aria-hidden="true"><use href="#ikon-galat"/></svg><span></span></p>
+        </div>
+
+        <div class="grup">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" required aria-describedby="galat-email">
+          <p class="galat" id="galat-email" hidden><svg class="ikon" aria-hidden="true"><use href="#ikon-galat"/></svg><span></span></p>
+        </div>
+
+        <div class="grup">
+          <label for="no_hp">Nomor HP</label>
+          <input id="no_hp" name="no_hp" type="tel" inputmode="tel" autocomplete="tel" required aria-describedby="petunjuk-hp galat-no_hp">
+          <p class="petunjuk" id="petunjuk-hp">Diawali 08 atau +62. Spasi dan tanda hubung boleh dipakai.</p>
+          <p class="galat" id="galat-no_hp" hidden><svg class="ikon" aria-hidden="true"><use href="#ikon-galat"/></svg><span></span></p>
+        </div>
+
+        <div class="grup">
+          <label for="kata_sandi">Kata sandi</label>
+          <div class="baris-sandi">
+            <input id="kata_sandi" name="kata_sandi" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false" required minlength="8" aria-describedby="petunjuk-sandi galat-kata_sandi">
+            <button type="button" class="tombol-kedua" id="tombol-lihat" aria-controls="kata_sandi"><span id="tombol-lihat-teks">Tampilkan</span><span class="hanya-pembaca"> kata sandi</span></button>
+          </div>
+          <p class="petunjuk" id="petunjuk-sandi">Minimal 8 karakter.</p>
+          <p class="galat" id="galat-kata_sandi" hidden><svg class="ikon" aria-hidden="true"><use href="#ikon-galat"/></svg><span></span></p>
+        </div>
+
+        <button type="submit" class="tombol-utama" id="tombol-kirim">Buat akun</button>
+        <p class="catatan" id="catatan-demo" hidden>Mode demo: formulir belum terhubung ke server, jadi data tidak dikirim ke mana pun.</p>
+      </form>
+    </section>
+
+    <section id="bagian-berhasil" hidden>
+      <div class="berhasil-judul">
+        <svg class="ikon" aria-hidden="true"><use href="#ikon-sukses"/></svg>
+        <h1 id="berhasil-judul" tabindex="-1"></h1>
+      </div>
+      <p id="berhasil-isi"></p>
+      <a class="tombol tombol-utama" id="tautan-lanjut" hidden>Lanjut ke TokoKita</a>
+      <button type="button" class="tombol-kedua" id="tombol-kembali" hidden>Kembali ke formulir</button>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // TODO: isi `endpoint` dengan URL API pendaftaran. Selama kosong, halaman berjalan dalam
+  // mode demo: validasi dan semua tampilan bekerja, tetapi tidak ada data yang dikirim.
+  // Data dikirim sebagai JSON lewat POST: { nama, email, no_hp, kata_sandi }.
+  // `halamanBerikutnya` (opsional) adalah tujuan tombol "Lanjut ke TokoKita" setelah berhasil.
+  var KONFIG = {
+    endpoint: '',
+    halamanBerikutnya: ''
+  };
+
+  var modeDemo = !KONFIG.endpoint;
+  // Di mode demo, buka signup.html?demo=gagal untuk melihat tampilan gagal kirim.
+  var demoGagal = modeDemo && new URLSearchParams(location.search).get('demo') === 'gagal';
+
+  var form = document.getElementById('form-daftar');
+  var tombolKirim = document.getElementById('tombol-kirim');
+  var tombolLihat = document.getElementById('tombol-lihat');
+  var tombolLihatTeks = document.getElementById('tombol-lihat-teks');
+  var galatKirim = document.getElementById('galat-kirim');
+  var galatKirimTeks = document.getElementById('galat-kirim-teks');
+  var bagianForm = document.getElementById('bagian-form');
+  var bagianBerhasil = document.getElementById('bagian-berhasil');
+  var urutan = ['nama', 'email', 'no_hp', 'kata_sandi'];
+  var sedangKirim = false;
+
+  // Nilai dirapikan di sini, bukan ditolak: spasi berlebih, huruf besar di email,
+  // dan nomor HP dengan spasi, tanda hubung, atau awalan +62 semuanya diterima.
+  var rapikan = {
+    nama: function (v) { return v.trim().replace(/\s+/g, ' '); },
+    email: function (v) { return v.trim().toLowerCase(); },
+    no_hp: function (v) {
+      var angka = v.replace(/[\s().-]/g, '');
+      if (angka.indexOf('+62') === 0) return '0' + angka.slice(3);
+      if (angka.indexOf('62') === 0) return '0' + angka.slice(2);
+      return angka;
+    },
+    kata_sandi: function (v) { return v; }
+  };
+
+  var periksa = {
+    nama: function (v) {
+      if (!v) return 'Isi nama lengkap.';
+      if (v.length < 2) return 'Nama minimal 2 huruf.';
+      return '';
+    },
+    email: function (v) {
+      if (!v) return 'Isi alamat email.';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Format email belum benar. Contoh: nama@email.com';
+      return '';
+    },
+    no_hp: function (v) {
+      if (!v) return 'Isi nomor HP.';
+      if (!/^08\d{8,11}$/.test(v)) return 'Nomor HP harus diawali 08 atau +62 dan berisi 10 sampai 13 angka.';
+      return '';
+    },
+    kata_sandi: function (v) {
+      if (!v) return 'Buat kata sandi.';
+      if (v.length < 8) return 'Kata sandi minimal 8 karakter, sekarang baru ' + v.length + '.';
+      return '';
+    }
+  };
+
+  function nilai(nama) {
+    return rapikan[nama](form.elements[nama].value);
+  }
+
+  function tampilkanGalat(nama, pesan) {
+    var kolom = form.elements[nama];
+    var wadah = document.getElementById('galat-' + nama);
+    wadah.querySelector('span').textContent = pesan;
+    wadah.hidden = !pesan;
+    if (pesan) kolom.setAttribute('aria-invalid', 'true');
+    else kolom.removeAttribute('aria-invalid');
+  }
+
+  function periksaKolom(nama) {
+    var pesan = periksa[nama](nilai(nama));
+    tampilkanGalat(nama, pesan);
+    return !pesan;
+  }
+
+  urutan.forEach(function (nama) {
+    var kolom = form.elements[nama];
+    kolom.addEventListener('blur', function () {
+      if (kolom.value !== '' || kolom.getAttribute('aria-invalid') === 'true') periksaKolom(nama);
+    });
+    kolom.addEventListener('input', function () {
+      if (kolom.getAttribute('aria-invalid') === 'true') periksaKolom(nama);
+    });
+  });
+
+  tombolLihat.addEventListener('click', function () {
+    var kolom = form.elements.kata_sandi;
+    var terlihat = kolom.type === 'text';
+    kolom.type = terlihat ? 'password' : 'text';
+    tombolLihatTeks.textContent = terlihat ? 'Tampilkan' : 'Sembunyikan';
+  });
+
+  function setSedangKirim(ya) {
+    sedangKirim = ya;
+    tombolKirim.disabled = ya;
+    tombolKirim.textContent = ya ? 'Membuat akun…' : 'Buat akun';
+    form.setAttribute('aria-busy', ya ? 'true' : 'false');
+  }
+
+  function kirim(data) {
+    if (modeDemo) {
+      return new Promise(function (selesai, gagal) {
+        setTimeout(function () {
+          if (demoGagal) gagal(new Error('demo'));
+          else selesai();
+        }, 700);
+      });
+    }
+    return fetch(KONFIG.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data),
+      signal: window.AbortSignal && AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined
+    }).then(function (respons) {
+      if (!respons.ok) {
+        var galat = new Error('HTTP ' + respons.status);
+        galat.dariServer = true;
+        throw galat;
+      }
+    });
+  }
+
+  function tampilkanBerhasil(data) {
+    var judul = document.getElementById('berhasil-judul');
+    var isi = document.getElementById('berhasil-isi');
+    var tautan = document.getElementById('tautan-lanjut');
+    var kembali = document.getElementById('tombol-kembali');
+
+    if (modeDemo) {
+      judul.textContent = 'Data lengkap dan valid';
+      isi.textContent = 'Ini mode demo. Halaman belum terhubung ke server, jadi akun atas nama ' +
+        data.nama + ' belum benar-benar dibuat dan tidak ada data yang dikirim.';
+      kembali.hidden = false;
+    } else {
+      judul.textContent = 'Akun berhasil dibuat';
+      isi.textContent = 'Halo, ' + data.nama + '. Akun kamu terdaftar dengan email ' + data.email + '.';
+      if (KONFIG.halamanBerikutnya) {
+        tautan.href = KONFIG.halamanBerikutnya;
+        tautan.hidden = false;
+      }
+    }
+
+    form.elements.kata_sandi.value = '';
+    form.elements.kata_sandi.type = 'password';
+    tombolLihatTeks.textContent = 'Tampilkan';
+    bagianForm.hidden = true;
+    bagianBerhasil.hidden = false;
+    judul.focus();
+  }
+
+  function tampilkanGagalKirim(galat) {
+    if (galat && galat.message === 'demo') {
+      galatKirimTeks.textContent = 'Simulasi gagal kirim (mode demo). Data yang sudah diisi tetap ada, jadi tinggal tekan Buat akun lagi.';
+    } else if (galat && galat.dariServer) {
+      galatKirimTeks.textContent = 'Pendaftaran belum berhasil diproses. Data yang sudah diisi tetap ada. Coba lagi beberapa saat lagi.';
+    } else {
+      galatKirimTeks.textContent = 'Tidak bisa terhubung ke server. Periksa koneksi internet, lalu tekan Buat akun lagi.';
+    }
+    galatKirim.hidden = false;
+    galatKirim.scrollIntoView({ block: 'nearest' });
+  }
+
+  form.addEventListener('submit', function (acara) {
+    acara.preventDefault();
+    if (sedangKirim) return;
+
+    galatKirim.hidden = true;
+    var salahPertama = null;
+    urutan.forEach(function (nama) {
+      if (!periksaKolom(nama) && !salahPertama) salahPertama = form.elements[nama];
+    });
+    if (salahPertama) {
+      salahPertama.focus();
+      return;
+    }
+
+    var data = {};
+    urutan.forEach(function (nama) { data[nama] = nilai(nama); });
+
+    setSedangKirim(true);
+    kirim(data).then(function () {
+      setSedangKirim(false);
+      tampilkanBerhasil(data);
+    }, function (galat) {
+      setSedangKirim(false);
+      tampilkanGagalKirim(galat);
+    });
+  });
+
+  document.getElementById('tombol-kembali').addEventListener('click', function () {
+    bagianBerhasil.hidden = true;
+    bagianForm.hidden = false;
+    form.elements.kata_sandi.focus();
+  });
+
+  if (modeDemo) document.getElementById('catatan-demo').hidden = false;
+})();
+</script>
+</body>
+</html>

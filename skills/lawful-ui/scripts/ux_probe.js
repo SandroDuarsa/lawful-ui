@@ -310,6 +310,15 @@
     }
   };
   Array.from(document.styleSheets).forEach(sh => { try { walkRules(sh.cssRules); } catch (e) { unreadableSheets++; } });
+  // A rule matters only if it reaches something the user can Tab to. A heading with tabindex="-1" that
+  // script focuses after a page change may drop its outline.
+  const TAB_STOP = 'a[href],button,input:not([type=hidden]),select,textarea,summary,[tabindex]:not([tabindex="-1"])';
+  const reachesTabStop = selText => selText.split(',').filter(p => /:focus/.test(p)).some(p => {
+    const base = p.replace(/:focus(-visible|-within)?/g, '').trim() || '*';
+    try { return Array.from(document.querySelectorAll(base)).some(el => el.matches(TAB_STOP)); } catch (e) { return true; }
+  });
+  const focusHarmless = focusRemoved.filter(r => !reachesTabStop(r));
+  const focusHarmful = focusRemoved.filter(r => reachesTabStop(r));
 
   // images (Imagery and Media)
   const dpr = window.devicePixelRatio || 1, imageIssues = [];
@@ -362,7 +371,7 @@
       distinctCornerRadii: Object.keys(radii.n).length, distinctShadows: Object.keys(shadows.n).length,
       distinctLeftEdges: Object.keys(edges.n).length, distinctFieldWidths: Object.keys(fieldWidths.n).length,
       tightLineHeightBlocks: tightLines.length, pageBackgroundSet,
-      focusOutlineRemovedRules: focusRemoved.length, imagesWithIssues: imageIssues.length, zoomBlocked
+      focusOutlineRemovedRules: focusHarmful.length, imagesWithIssues: imageIssues.length, zoomBlocked
     },
     timingMs: nav ? { firstByte: Math.round(nav.responseStart), firstContentfulPaint: paint('first-contentful-paint'),
       domContentLoaded: Math.round(nav.domContentLoadedEventEnd), load: Math.round(nav.loadEventEnd) } : null,
@@ -385,7 +394,7 @@
       cornerRadii: topOf(radii, 10), shadows: topOf(shadows, 6).map(x => ({ value: x.value.slice(0, 70), count: x.count, example: x.example })),
       tightLineHeight: tightLines.slice(0, CAP),
       minTextInsetLeftPx: minInset === Infinity ? null : round(minInset), minTextInsetAt: minInsetEl ? selectorOf(minInsetEl) : null,
-      focus: { outlineRemovedWithoutReplacement: focusRemoved, unreadableStylesheets: unreadableSheets },
+      focus: { outlineRemovedWithoutReplacement: focusHarmful, rulesReachingNoTabStop: focusHarmless, unreadableStylesheets: unreadableSheets },
       motion: { elementsWithTransitionOrAnimation: moving, hasReducedMotionRule: moving ? reducedMotionRule : null },
       theme: { hasColorSchemeRule: colorSchemeRule },
       images: imageIssues.slice(0, CAP),

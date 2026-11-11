@@ -4,7 +4,7 @@
  * Evaluate this file once in the page (same ways as ux_probe.js). It defines window.__lawful and returns
  * the list of helpers. Unlike the probe, these ACT on the page: click() really clicks, and aid() injects a
  * temporary style. Nothing is saved; a reload removes everything. Mind side effects before clicking on a
- * live product (see SKILL.md).
+ * live product (see "Mind side effects" in references/test.md).
  *
  *   await __lawful.click('button.primary')   did anything happen after a click? (dead-control test)
  *   __lawful.focusTour()                     which tab stops show no visible focus change

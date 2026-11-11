@@ -8,13 +8,44 @@
 
 ### Bikin UI-mu taat hukum.
 
-Skill untuk AI agent yang menguji tampilan web dan mobile berdasarkan **30 Laws of UX** dan **20 Laws of UI**.
+Skill untuk AI agent supaya **membuat** tampilan yang mengikuti **30 Laws of UX** dan **20 Laws of UI**, dan **menguji** tampilan yang sudah ada terhadap hukum yang sama.
 
-[Pasang](#cara-pasang) · [Daftar hukum](#daftar-hukum) · [Cara pakai](#cara-pakai) · [Coba demo](#coba-di-halaman-demo) · [English](README.md)
+[Dua mode](#dua-mode) · [Pasang](#cara-pasang) · [Daftar hukum](#daftar-hukum) · [Cara pakai](#cara-pakai) · [Coba demo](#coba-di-halaman-demo) · [English](README.md)
 
 </div>
 
 ---
+
+## Dua mode
+
+| Mode | Aktif saat | Yang dilakukan AI |
+|---|---|---|
+| **Build** | Kamu minta membuat atau mengubah tampilan apa pun: "buatkan halaman pendaftaran", "tambah layar pengaturan", "rapikan form ini". Tidak perlu menyebut UX. | Membangun mengikuti hukum sejak awal: satu aksi utama, target sentuh ukuran penuh, skala jarak dan tipografi, kontras yang lolos, field berlabel, semua state dirancang, layout yang jalan di lebar 320 px. Untuk layar baru, AI memeriksa hasilnya sendiri dan menutup jawabannya dengan catatan singkat **Lawful check**. |
+| **Test** | Kamu minta testing, QA, audit, atau review tampilan yang sudah ada. | Mendata semua komponen, mengukur, menilai tiap komponen terhadap hukum, lalu menulis laporan temuan. |
+
+Mode Build memberi batasan, bukan gaya. Brand, palet, jenis huruf, dan layout tetap milikmu; design system yang sudah ada tetap dipakai selama memenuhi ambang. Instruksi eksplisitmu selalu didahulukan, dan kalau instruksi itu melanggar ambang tegas seperti kontras, AI menyampaikannya sekali lalu mengikuti keputusanmu.
+
+Aturan yang dipakai saat membangun ada di [`skills/lawful-ui/references/build.md`](skills/lawful-ui/references/build.md).
+
+## Mode Build, diukur
+
+[`demo/built.html`](demo/built.html) adalah halaman pendaftaran yang ditulis agent dengan lawful-ui terpasang, dari permintaan satu kalimat yang tidak menyebut skill maupun UX. [`demo/violations.html`](demo/violations.html) adalah halaman sejenis yang sengaja dibuat buruk. Keduanya diukur dengan `ux_probe.js` dan `ux_checks.js` pada lebar HP 375 px:
+
+| Ukuran | `violations.html` | `built.html` |
+|---|---|---|
+| Target sentuh di bawah 44 px | 37 dari 38 | 0 dari 6 |
+| Kontras teks yang gagal | 2 | 0 |
+| Field dengan masalah label, tipe, atau autocomplete | 14 dari 15 | 0 dari 4 |
+| Nilai jarak di luar skala 4 px | 63% | 0% |
+| Perhentian Tab yang garis fokusnya dihapus | 36 dari 38 | 0 dari 6 |
+| Melebar ke samping | 757 px | 0 |
+| Add-on berbayar sudah tercentang | ya | tidak |
+| Password terkirim lewat URL | ya | tidak |
+| Zoom diblokir | ya | tidak |
+
+Satu halaman dari satu kali uji adalah contoh, bukan benchmark, dan agent yang membuatnya juga memasang skill UI lain.
+
+## Yang dilakukan mode Test
 
 Cukup bilang ke AI agent "tolong testing halaman ini". Dengan lawful-ui terpasang, AI tidak lagi menebak, tetapi menjalankan prosedur:
 
@@ -138,8 +169,9 @@ agent plugin marketplace add https://github.com/SandroDuarsa/lawful-ui
 Salin `skills/lawful-ui` ke dalam proyek, lalu tambahkan teks ini ke file instruksi yang dibaca agent (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.cursorrules`, dan sejenisnya). Teks yang sama ada di [`rules/lawful-ui.md`](rules/lawful-ui.md).
 
 ```text
-Setiap kali diminta testing, QA, audit, atau review tampilan web / mobile,
-baca dan ikuti skills/lawful-ui/SKILL.md sebelum mulai.
+Setiap kali membuat atau mengubah tampilan, baca skills/lawful-ui/references/build.md
+dulu dan bangun mengikuti aturannya. Setiap kali diminta testing, QA, audit, atau review
+tampilan, baca skills/lawful-ui/references/test.md dulu dan ikuti alurnya.
 ```
 
 ### Versi satu file
@@ -152,16 +184,20 @@ curl -o lawful-ui.md https://raw.githubusercontent.com/SandroDuarsa/lawful-ui/ma
 
 ## Cara pakai
 
-Minta dengan kata-kata sendiri. Skill ini dibuat untuk termuat saat ada permintaan testing, QA, audit, review, atau cek tampilan, dalam bahasa Indonesia maupun Inggris.
+Minta dengan kata-kata sendiri, dalam bahasa Indonesia maupun Inggris. Skill ini dibuat untuk termuat saat ada permintaan membuat atau mengubah tampilan, dan saat ada permintaan testing, QA, audit, review, atau cek tampilan.
 
 ```text
+Buatkan halaman pendaftaran untuk tokoku, satu file HTML, warna utama biru
+Tambahkan layar pengaturan di aplikasi Flutter ini
 Tolong testing halaman checkout di http://localhost:3000/checkout
 Tes semua layar aplikasi Flutter ini
 Cek UI/UX form pendaftaran ini                 (sambil melampirkan screenshot)
 Review tampilan dashboard, lalu perbaiki temuan yang High ke atas
 ```
 
-Hasil bawaannya adalah laporan. AI hanya mengubah kode kalau diminta memperbaiki, lalu mengukur ulang supaya laporan menunjukkan sebelum dan sesudah.
+Di mode Test, hasil bawaannya adalah laporan. AI hanya mengubah kode kalau diminta memperbaiki, lalu mengukur ulang supaya laporan menunjukkan sebelum dan sesudah.
+
+Skill termuat saat AI menilainya relevan. Supaya mode Build pasti aktif di setiap pekerjaan UI, tambahkan juga pointer di [`rules/lawful-ui.md`](rules/lawful-ui.md) ke file instruksi yang selalu dibaca agent (`CLAUDE.md`, `AGENTS.md`, atau rule Cursor di `rules/lawful-ui.mdc`).
 
 Di situs produksi yang sedang hidup, skill ini meminta AI hanya melakukan aksi yang tidak mengubah apa pun dan bertanya dulu sebelum mengirim form, karena testing berarti mengklik dan satu klik bisa membuat pesanan sungguhan.
 
@@ -197,7 +233,9 @@ Lalu minta ke agent: `tolong testing http://127.0.0.1:8765/violations.html`.
 
 | Path | Isi |
 |---|---|
-| `skills/lawful-ui/SKILL.md` | Alur kerja dan aturan bukti |
+| `skills/lawful-ui/SKILL.md` | Dua kumpulan hukum dan mode mana yang dipakai |
+| `skills/lawful-ui/references/build.md` | Mode Build: aturan saat membangun dan pemeriksaan sebelum menyerahkan |
+| `skills/lawful-ui/references/test.md` | Mode Test: alur kerja, aturan bukti, tingkat keparahan, dan skor |
 | `skills/lawful-ui/references/laws.md` | 30 Laws of UX sebagai kriteria uji |
 | `skills/lawful-ui/references/ui-laws.md` | 20 Laws of UI sebagai kriteria uji |
 | `skills/lawful-ui/references/components.md` | Checklist per jenis komponen dan per alur |
@@ -206,7 +244,7 @@ Lalu minta ke agent: `tolong testing http://127.0.0.1:8765/violations.html`.
 | `skills/lawful-ui/assets/report-template.md` | Template laporan |
 | `rules/` | Pointer singkat untuk agent yang memuat rules, bukan skill |
 | `lawful-ui.md` | Versi satu file, dibuat oleh `scripts/build-single-file.py` |
-| `demo/` | Halaman demo, contoh laporan utuh, dan contoh dump Android |
+| `demo/` | Halaman demo yang buruk, halaman hasil mode Build, contoh laporan utuh, dan contoh dump Android |
 | `assets/` | Logo dan banner (sumber SVG dan hasil render PNG) |
 
 ## Kredit

@@ -10,12 +10,14 @@ import re
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SKILL = ROOT / "skills" / "lawful-ui"
 PARTS = [
-    ("references/laws.md", "Part 2"),
-    ("references/ui-laws.md", "Part 3"),
-    ("references/components.md", "Part 4"),
-    ("references/web.md", "Part 5"),
-    ("references/mobile.md", "Part 6"),
-    ("assets/report-template.md", "Part 7"),
+    ("references/build.md", "Part 2"),
+    ("references/test.md", "Part 3"),
+    ("references/laws.md", "Part 4"),
+    ("references/ui-laws.md", "Part 5"),
+    ("references/components.md", "Part 6"),
+    ("references/web.md", "Part 7"),
+    ("references/mobile.md", "Part 8"),
+    ("assets/report-template.md", "Part 9"),
 ]
 
 
@@ -38,7 +40,7 @@ chunks = [
     "> included below as a part of this document. The measuring scripts are not included; get them from",
     "> https://github.com/SandroDuarsa/lawful-ui/tree/main/skills/lawful-ui/scripts or measure by hand.",
     "",
-    "# Part 1: Workflow",
+    "# Part 1: The laws and the two modes",
     "",
     demote(body),
 ]

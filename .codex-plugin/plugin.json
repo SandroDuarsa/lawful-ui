@@ -1,7 +1,7 @@
 {
   "name": "lawful-ui",
-  "version": "1.1.0",
-  "description": "lawful-ui: make your UI obey the law. Tests web and mobile interfaces against 30 Laws of UX and 20 Laws of UI and reports every violation with evidence.",
+  "version": "1.2.0",
+  "description": "lawful-ui: make your UI obey the law. Builds web and mobile interfaces to 30 Laws of UX and 20 Laws of UI, and tests existing ones against them with evidence.",
   "author": {
     "name": "SandroDuarsa"
   },
@@ -20,8 +20,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "lawful-ui",
-    "shortDescription": "Tests any web or mobile UI against 30 Laws of UX and 20 Laws of UI.",
-    "longDescription": "When you ask the agent to test a website or app, lawful-ui inventories every component, measures it, checks it against 30 Laws of UX and 20 Laws of UI, and writes a prioritized findings report with evidence and fixes.",
+    "shortDescription": "Builds and tests web and mobile UI against 30 Laws of UX and 20 Laws of UI.",
+    "longDescription": "When the agent builds or changes an interface, lawful-ui has it follow 30 Laws of UX and 20 Laws of UI from the start. When you ask it to test one, it inventories every component, measures it, checks it against the laws, and writes a prioritized findings report with evidence and fixes.",
     "developerName": "SandroDuarsa",
     "category": "Productivity",
     "brandColor": "#0B1220",

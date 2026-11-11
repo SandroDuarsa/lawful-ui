@@ -10,7 +10,7 @@ For each screen in scope:
 2. Run `scripts/ux_probe.js` in the page at both viewports. It is one JavaScript expression that returns an object. It only reads the page.
 3. Load `scripts/ux_checks.js` and run the interactive checks (next section).
 4. Open what is hidden and run the probe again where it matters: menus, modals, dropdowns, accordions, tabs, the mobile navigation drawer.
-5. Trigger the states: submit a form empty and with bad input, slow the network, look at empty and loading states, hover and tab through the controls. Submitting is only safe on a local, test, or staging environment; see "Mind side effects" in SKILL.md before doing it anywhere else.
+5. Trigger the states: submit a form empty and with bad input, slow the network, look at empty and loading states, hover and tab through the controls. Submitting is only safe on a local, test, or staging environment; see "Mind side effects" in `test.md` before doing it anywhere else.
 
 On a page that does not change between viewports, the second probe run repeats the first. Read only `page`, `warnings`, `summary`, and `smallTargets` from it.
 
@@ -28,17 +28,27 @@ const result = await page.evaluate(require('fs').readFileSync('scripts/ux_probe.
 result = driver.execute_script("return " + open("scripts/ux_probe.js").read())
 ```
 
-If your tool accepts only a string of JavaScript (most agent browser tools), do not paste the script again after every reload. Serve the folder once and load it by URL:
+If your tool accepts only a string of JavaScript (most agent browser tools), do not paste the script again after every reload. Serve the scripts once and load them by URL:
 
 ```bash
-python3 scripts/serve.py        # http://127.0.0.1:8791, localhost only, read-only
+python3 scripts/serve.py        # http://localhost:8791, this machine only, read-only
 ```
 
 ```js
-JSON.stringify((0, eval)(await (await fetch('http://127.0.0.1:8791/ux_probe.js')).text()))
+JSON.stringify((0, eval)(await (await fetch('http://localhost:8791/ux_probe.js')).text()))
 ```
 
-Stop the server when the test is done. If the page's Content-Security-Policy blocks the fetch, paste the script's contents instead. In a browser console, paste the file contents; to copy the result, wrap the paste as `copy(JSON.stringify( ...paste... , null, 2))`.
+When the thing to test is a file or folder on disk that the browser cannot open directly, let the same server serve it. The scripts then load from the page's own origin:
+
+```bash
+python3 scripts/serve.py --site path/to/folder    # the folder at /, the scripts at /__lawful/
+```
+
+```js
+JSON.stringify((0, eval)(await (await fetch('/__lawful/ux_probe.js')).text()))
+```
+
+Some browser tools refuse `localhost` and accept `127.0.0.1`, or the reverse; try the other. Stop the server when the test is done. If the page's Content-Security-Policy blocks the fetch, paste the script's contents instead. In a browser console, paste the file contents; to copy the result, wrap the paste as `copy(JSON.stringify( ...paste... , null, 2))`.
 
 ## Interactive checks: `ux_checks.js`
 
@@ -85,7 +95,7 @@ The probe reports signals. You still decide the status, using `laws.md` and `ui-
 | `ui.cornerRadii`, `ui.shadows` | Radius (including square, `0px`) and shadow styles of boxes | U10, U17 |
 | `ui.tightLineHeight` | Multi-line text blocks with line height under 1.3 | U06 |
 | `ui.minTextInsetLeftPx`, `ui.minTextInsetAt` | Smallest distance from text to the left screen edge and where; under 16 on a phone is cramped | U04 |
-| `ui.focus.outlineRemovedWithoutReplacement` | Style rules that remove the focus outline and set nothing in its place. `unreadableStylesheets` counts cross-origin stylesheets the probe could not inspect. | U14 |
+| `ui.focus.outlineRemovedWithoutReplacement` | Style rules that remove the focus outline from at least one real tab stop and set nothing in its place. Rules that only reach elements focused by script (`tabindex="-1"`) are listed separately under `rulesReachingNoTabStop` and are not a problem. `unreadableStylesheets` counts cross-origin stylesheets the probe could not inspect. | U14 |
 | `ui.motion` | How many elements animate. `hasReducedMotionRule` is `null` when nothing animates (U19 is then N/A), otherwise whether a reduced-motion rule exists. | U19 |
 | `ui.theme.hasColorSchemeRule` | `true`: the styles respond to dark mode, so test both themes. `false`: single theme; then `pageBackgroundSet` must be true. | U07 |
 | `ui.images` | Images that are stretched, upscaled, missing `alt`, or have no reserved size | U18 |

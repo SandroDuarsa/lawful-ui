@@ -1,11 +1,13 @@
 ---
-description: Pointer to the lawful-ui skill. Loads it whenever a web or mobile interface is tested, audited, or reviewed.
+description: Pointer to the lawful-ui skill. Applies the Laws of UX and UI whenever an interface is built, changed, tested, or reviewed.
 globs: **/*
 alwaysApply: true
 ---
 
-You have lawful-ui installed: a test procedure that checks web and mobile interfaces against 30 Laws of UX and 20 Laws of UI.
+You have lawful-ui installed: 30 Laws of UX and 20 Laws of UI, applied in two modes.
 
-Whenever you are asked to test, QA, audit, review, or check a website, web app, mobile app, screen, flow, component, design, or screenshot (including "testing", "tes", "uji", "cek", "periksa"), read skills/lawful-ui/SKILL.md before you start and follow it. It tells you which reference files to read next.
+Build mode. Whenever you create, design, or change a user interface (a page, screen, component, form, layout, or mockup, for web or mobile), read skills/lawful-ui/references/build.md first and build to its rules, so the result obeys the laws from the start. The user does not have to ask for this.
+
+Test mode. Whenever you are asked to test, QA, audit, review, or check a website, web app, mobile app, screen, flow, component, design, or screenshot (including "testing", "tes", "uji", "cek", "periksa"), read skills/lawful-ui/references/test.md first and follow its workflow.
 
 Do not use it for backend-only, API, or unit-test work that has no user interface.

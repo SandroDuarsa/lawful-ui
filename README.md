@@ -8,13 +8,44 @@
 
 ### Make your UI obey the law.
 
-An agent skill that tests web and mobile interfaces against **30 Laws of UX** and **20 Laws of UI**.
+An agent skill that makes your AI **build** interfaces that follow **30 Laws of UX** and **20 Laws of UI**, and **test** existing ones against them.
 
-[Install](#install) · [The laws](#the-laws) · [Use](#use) · [Try the demo](#try-it-on-the-demo-page) · [Bahasa Indonesia](README.id.md)
+[Two modes](#two-modes) · [Install](#install) · [The laws](#the-laws) · [Use](#use) · [Try the demo](#try-it-on-the-demo-page) · [Bahasa Indonesia](README.id.md)
 
 </div>
 
 ---
+
+## Two modes
+
+| Mode | Starts when | What the agent does |
+|---|---|---|
+| **Build** | You ask it to create or change any UI: "build a sign-up page", "add a settings screen", "redo this form". You do not have to mention UX. | Builds to the laws from the start: one primary action, full-size touch targets, a spacing and type scale, contrast that passes, labelled fields, every state designed, a layout that works at 320 px. For a new screen it checks its own work and closes with a short **Lawful check** note. |
+| **Test** | You ask it to test, QA, audit, or review a UI that exists. | Inventories every component, measures, checks each against the laws, and writes a findings report. |
+
+Build mode sets constraints, not a style. Brand, palette, typeface, and layout stay yours; an existing design system wins wherever it meets the thresholds. Your explicit instruction always comes first, and if it breaks a firm threshold such as contrast, the agent says so once and then does what you decide.
+
+The rules it builds with are in [`skills/lawful-ui/references/build.md`](skills/lawful-ui/references/build.md).
+
+## Build mode, measured
+
+[`demo/built.html`](demo/built.html) is a sign-up page an agent wrote with lawful-ui installed, from a one-line request that mentioned neither the skill nor UX. [`demo/violations.html`](demo/violations.html) is the same kind of page built badly on purpose. Both were measured with `ux_probe.js` and `ux_checks.js` at a 375 px phone width:
+
+| Measure | `violations.html` | `built.html` |
+|---|---|---|
+| Touch targets under 44 px | 37 of 38 | 0 of 6 |
+| Text contrast failures | 2 | 0 |
+| Fields with label, type, or autocomplete problems | 14 of 15 | 0 of 4 |
+| Spacing values off the 4 px scale | 63% | 0% |
+| Tab stops with the focus outline removed | 36 of 38 | 0 of 6 |
+| Sideways overflow | 757 px | 0 |
+| Pre-ticked paid add-on | yes | no |
+| Password sent in the URL | yes | no |
+| Zoom blocked | yes | no |
+
+One page from one run is an example, not a benchmark, and the agent that built it also had other UI skills installed.
+
+## What Test mode does
 
 Tell your AI agent "test this page". With lawful-ui installed, it stops guessing and runs a procedure:
 
@@ -136,8 +167,9 @@ agent plugin marketplace add https://github.com/SandroDuarsa/lawful-ui
 Copy `skills/lawful-ui` into your project and add this to the instruction file your agent reads (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.cursorrules`, and similar). The same text is in [`rules/lawful-ui.md`](rules/lawful-ui.md).
 
 ```text
-Whenever you are asked to test, QA, audit, or review a web or mobile interface,
-read skills/lawful-ui/SKILL.md before you start and follow it.
+Whenever you create or change a user interface, read skills/lawful-ui/references/build.md
+first and build to its rules. Whenever you are asked to test, QA, audit, or review an
+interface, read skills/lawful-ui/references/test.md first and follow its workflow.
 ```
 
 ### The single file
@@ -150,16 +182,20 @@ curl -o lawful-ui.md https://raw.githubusercontent.com/SandroDuarsa/lawful-ui/ma
 
 ## Use
 
-Ask in your own words. The skill is written to load on requests to test, QA, audit, review, or check an interface, in English or Indonesian.
+Ask in your own words, in English or Indonesian. The skill is written to load on requests to build or change an interface, and on requests to test, QA, audit, review, or check one.
 
 ```text
+Build a sign-up page for my store, one HTML file, primary color blue
+Add a settings screen to this Flutter app
 Test the checkout page at http://localhost:3000/checkout
 Test every screen of this Flutter app
 Check the UI/UX of this sign-up form          (with a screenshot attached)
 Review the dashboard, then fix everything rated High or above
 ```
 
-The default deliverable is the report. The agent changes code only when you ask for fixes, and then re-measures so the report shows before and after.
+In Test mode the default deliverable is the report. The agent changes code only when you ask for fixes, and then re-measures so the report shows before and after.
+
+Skills load when the agent judges them relevant. To make Build mode certain on every UI task, also add the pointer in [`rules/lawful-ui.md`](rules/lawful-ui.md) to your agent's always-on instruction file (`CLAUDE.md`, `AGENTS.md`, or the Cursor rule in `rules/lawful-ui.mdc`).
 
 On a live production site the skill tells the agent to stay with actions that change nothing and to ask before submitting forms, because testing means clicking and a click can place an order.
 
@@ -195,7 +231,9 @@ Then ask your agent: `test http://127.0.0.1:8765/violations.html`.
 
 | Path | What it is |
 |---|---|
-| `skills/lawful-ui/SKILL.md` | The workflow and the rules of evidence |
+| `skills/lawful-ui/SKILL.md` | The two law sets and which mode to use |
+| `skills/lawful-ui/references/build.md` | Build mode: the rules to build with and the check before delivering |
+| `skills/lawful-ui/references/test.md` | Test mode: the workflow, rules of evidence, severity, and scoring |
 | `skills/lawful-ui/references/laws.md` | The 30 Laws of UX as test criteria |
 | `skills/lawful-ui/references/ui-laws.md` | The 20 Laws of UI as test criteria |
 | `skills/lawful-ui/references/components.md` | Checklists per component type and per flow |
@@ -204,7 +242,7 @@ Then ask your agent: `test http://127.0.0.1:8765/violations.html`.
 | `skills/lawful-ui/assets/report-template.md` | The report template |
 | `rules/` | A short pointer for agents that load rules instead of skills |
 | `lawful-ui.md` | The single-file version, built by `scripts/build-single-file.py` |
-| `demo/` | The demo page, a full sample report, and a sample Android dump |
+| `demo/` | The bad demo page, a page built in Build mode, a full sample report, and a sample Android dump |
 | `assets/` | Logo and banner (SVG sources and PNG renders) |
 
 ## Credits
