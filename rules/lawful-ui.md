@@ -1,0 +1,5 @@
+You have lawful-ui installed: a test procedure that checks web and mobile interfaces against 30 Laws of UX and 20 Laws of UI.
+
+Whenever you are asked to test, QA, audit, review, or check a website, web app, mobile app, screen, flow, component, design, or screenshot (including "testing", "tes", "uji", "cek", "periksa"), read skills/lawful-ui/SKILL.md before you start and follow it. It tells you which reference files to read next.
+
+Do not use it for backend-only, API, or unit-test work that has no user interface.

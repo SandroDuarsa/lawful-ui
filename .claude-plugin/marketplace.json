@@ -1,0 +1,15 @@
+{
+  "name": "lawful-ui",
+  "description": "The lawful-ui skill. Tests any web or mobile UI against 30 Laws of UX and 20 Laws of UI.",
+  "owner": {
+    "name": "SandroDuarsa"
+  },
+  "plugins": [
+    {
+      "name": "lawful-ui",
+      "source": "./",
+      "version": "1.0.0",
+      "description": "lawful-ui: make your UI obey the law. Tests web and mobile interfaces against 30 Laws of UX and 20 Laws of UI and reports every violation with evidence."
+    }
+  ]
+}

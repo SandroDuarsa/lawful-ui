@@ -1,0 +1,23 @@
+{
+  "name": "lawful-ui",
+  "displayName": "lawful-ui",
+  "version": "1.0.0",
+  "description": "lawful-ui: make your UI obey the law. Tests web and mobile interfaces against 30 Laws of UX and 20 Laws of UI and reports every violation with evidence.",
+  "author": {
+    "name": "SandroDuarsa"
+  },
+  "repository": "https://github.com/SandroDuarsa/lawful-ui",
+  "license": "MIT",
+  "keywords": [
+    "laws-of-ux",
+    "ui-audit",
+    "ux-audit",
+    "agent-skills",
+    "ui-testing",
+    "accessibility",
+    "design-review"
+  ],
+  "skills": [
+    "./skills/"
+  ]
+}

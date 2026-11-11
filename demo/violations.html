@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TokoKita - Daftar</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; color: #222; }
+  nav { background: #f4f4f4; padding: 6px 10px; }
+  nav a { font-size: 11px; margin-right: 3px; color: #1a56db; text-decoration: none; }
+  .promo { background: #ffe9a8; padding: 8px; font-size: 13px; }
+  main { padding: 16px; width: 1100px; }
+  h1 { font-size: 22px; }
+  .muted { color: #b8b8b8; font-size: 13px; }
+  .icons button { width: 16px; height: 16px; padding: 0; border: 0; background: #ddd; font-size: 9px; margin-right: 2px; }
+  input, select { display: block; margin: 0 0 14px 0; padding: 4px; width: 260px; font-size: 13px; }
+  .lbl { display: block; margin: 0 0 14px 0; font-size: 13px; }
+  .btn-a { background: #e02424; color: #fff; border: 0; padding: 10px 18px; border-radius: 4px; font-size: 14px; }
+  .btn-b { background: #1a56db; color: #fff; border: 0; padding: 12px 20px; border-radius: 20px; font-size: 16px; font-weight: 700; }
+  .btn-c { background: #0e9f6e; color: #fff; border: 0; padding: 8px 12px; border-radius: 0; font-size: 12px; }
+  .del { background: #fff; color: #e02424; border: 1px solid #e02424; padding: 2px 4px; font-size: 10px; margin-left: 2px; }
+  .fake-link { color: #1a56db; text-decoration: underline; }
+  button:focus, input:focus, a:focus { outline: none; }
+  .banner-img { width: 300px; height: 60px; margin: 7px 0 13px 5px; }
+</style>
+</head>
+<body>
+<nav id="mainnav">
+  <a href="#">Beranda</a><a href="#">Produk</a><a href="#">Kategori</a><a href="#">Promo</a><a href="#">Flash Sale</a>
+  <a href="#">Brand</a><a href="#">Blog</a><a href="#">Karir</a><a href="#">Mitra</a><a href="#">Bantuan</a>
+  <a href="#">Tentang</a><a href="#">Kontak</a><a href="#">Akun</a><a href="#">Keranjang</a>
+</nav>
+<div class="promo">Sisa 2 menit! Diskon 90% berakhir segera. <a href="#">Tidak, saya tidak suka hemat</a></div>
+<main>
+  <img class="banner-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFklEQVR4nGNkYPjPgA0wYRUdtBIAVDwBD2bVsWIAAAAASUVORK5CYII=">
+  <h1>Buat Akun</h1>
+  <h1>Formulir Pendaftaran</h1>
+  <p class="muted">Isi data di bawah ini dengan lengkap dan benar agar akun Anda dapat diverifikasi oleh sistem kami.</p>
+  <p>Selamat datang di TokoKita. Dengan mendaftar Anda menyetujui seluruh syarat dan ketentuan yang berlaku, termasuk namun tidak terbatas pada kebijakan privasi, kebijakan pengembalian barang, kebijakan pengiriman, kebijakan pembayaran, serta kebijakan lain yang dapat berubah sewaktu-waktu tanpa pemberitahuan terlebih dahulu. Kami menyarankan Anda membaca seluruh dokumen tersebut dengan saksama sebelum melanjutkan proses pendaftaran. Data yang Anda berikan akan digunakan untuk keperluan verifikasi, pengiriman, penagihan, promosi, analisis, dan peningkatan layanan. Anda bertanggung jawab penuh atas kerahasiaan kata sandi dan seluruh aktivitas yang terjadi di akun Anda. Apabila terjadi penyalahgunaan, segera hubungi layanan pelanggan kami melalui halaman bantuan yang tersedia di bagian bawah situs ini pada jam kerja.</p>
+
+  <div class="icons">
+    <button title="Edit">E</button><button title="Hapus">X</button><button title="Bagikan">S</button><button title="Simpan">V</button>
+  </div>
+
+  <form id="signup">
+    <span class="lbl">Nama depan</span>
+    <input name="first" placeholder="Nama depan">
+    <input name="last" placeholder="Nama belakang">
+    <input name="email" type="text" placeholder="Email">
+    <input name="phone" type="text" placeholder="No HP (format: 08xxxxxxxxxx tanpa spasi)">
+    <input name="password" type="password" placeholder="Kata sandi">
+    <input name="password2" type="password" placeholder="Ulangi kata sandi">
+    <input name="address" placeholder="Alamat">
+    <input name="city" placeholder="Kota">
+    <input name="postal" placeholder="Kode pos">
+    <select name="province" id="province"></select>
+    <select name="cardtype"><option>Pilih jenis kartu</option><option>Visa</option><option>Mastercard</option><option>JCB</option></select>
+    <input name="card" placeholder="Nomor kartu (16 digit tanpa spasi)">
+    <input name="company" placeholder="Perusahaan">
+    <input name="fax" placeholder="Fax">
+    <label><input type="checkbox" checked style="display:inline;width:auto"> Tambahkan asuransi premium Rp 49.000</label>
+    <p><span class="fake-link">Syarat dan ketentuan</span></p>
+    <button class="btn-a" type="submit">OK</button>
+    <button class="btn-b" type="button">Daftar Sekarang</button>
+    <button class="btn-c" type="button">Lanjut</button>
+    <button class="del" type="reset">Hapus semua</button>
+  </form>
+</main>
+<script>
+  const sel = document.getElementById('province');
+  for (let i = 1; i <= 38; i++) { const o = document.createElement('option'); o.textContent = 'Provinsi ' + i; sel.appendChild(o); }
+</script>
+</body>
+</html>

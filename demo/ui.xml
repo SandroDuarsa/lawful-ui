@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="0">
+  <node index="0" text="" resource-id="" class="android.widget.FrameLayout" content-desc="" clickable="false" bounds="[0,0][1080,2400]">
+    <node index="0" text="" resource-id="id/close" class="android.widget.ImageButton" content-desc="" clickable="true" bounds="[1000,80][1050,130]" />
+    <node index="1" text="" resource-id="id/delete" class="android.widget.ImageButton" content-desc="Hapus" clickable="true" bounds="[940,80][990,130]" />
+    <node index="2" text="Simpan" resource-id="id/save" class="android.widget.Button" content-desc="" clickable="true" bounds="[60,1900][1020,2060]" />
+    <node index="3" text="" resource-id="id/tab_home" class="android.widget.LinearLayout" content-desc="" clickable="true" bounds="[0,2200][360,2400]">
+      <node index="0" text="Beranda" resource-id="" class="android.widget.TextView" content-desc="" clickable="false" bounds="[120,2320][240,2370]" />
+    </node>
+    <node index="4" text="Cari" resource-id="id/tab_search" class="android.widget.LinearLayout" content-desc="" clickable="true" bounds="[360,2200][720,2400]" />
+    <node index="5" text="Akun" resource-id="id/tab_account" class="android.widget.LinearLayout" content-desc="" clickable="true" bounds="[720,2200][1080,2400]" />
+  </node>
+</hierarchy>
