@@ -1,6 +1,8 @@
 <p align="center">
-  <img src="./assets/banner.png" alt="lawful-ui: Make your UI obey the law. A verdict card lists laws with FAIL, WARN, and PASS results." width="100%" />
+  <img src="https://media.giphy.com/media/oAL0Omuf9uUbF1o0bb/giphy.gif" alt="Hiromi Higuruma, the lawyer from Jujutsu Kaisen, seated in a courtroom" width="640" />
 </p>
+
+<p align="center"><em>Domain Expansion: Deadly Sentencing. Your UI stands trial.</em></p>
 
 <div align="center">
 
@@ -13,6 +15,10 @@ An agent skill that makes your AI **build** interfaces that follow **30 Laws of 
 [Two modes](#two-modes) · [Install](#install) · [The laws](#the-laws) · [Use](#use) · [Try the demo](#try-it-on-the-demo-page) · [Bahasa Indonesia](README.id.md)
 
 </div>
+
+<p align="center">
+  <img src="./assets/banner.png" alt="lawful-ui: Make your UI obey the law. A verdict card lists laws with FAIL, WARN, and PASS results." width="100%" />
+</p>
 
 ---
 
@@ -47,6 +53,12 @@ One page from one run is an example, not a benchmark, and the agent that built i
 
 ## What Test mode does
 
+<p align="center">
+  <img src="https://media.giphy.com/media/IgBMDZCU5IRUFKGhpy/giphy.gif" alt="Phoenix Wright from Ace Attorney slams both hands on the defense bench" width="420" />
+</p>
+
+<p align="center"><em>Court is in session.</em></p>
+
 Tell your AI agent "test this page". With lawful-ui installed, it stops guessing and runs a procedure:
 
 1. Lists every screen and every component on it, including the states people forget (empty, loading, error, disabled).
@@ -57,6 +69,12 @@ Tell your AI agent "test this page". With lawful-ui installed, it stops guessing
 It works on a running app (browser, emulator, simulator), on source code alone, or on screenshots. Each finding says which of those it came from.
 
 ## What a finding looks like
+
+<p align="center">
+  <img src="https://media.giphy.com/media/52G16STbF7QwogTVkg/giphy.gif" alt="Miles Edgeworth from Ace Attorney raises an objection from the prosecution bench" width="420" />
+</p>
+
+<p align="center"><em>The prosecution presents its evidence.</em></p>
 
 From a run against the demo page in this repository:
 
@@ -248,6 +266,8 @@ Then ask your agent: `test http://127.0.0.1:8765/violations.html`.
 ## Credits
 
 The Laws of UX were collected by Jon Yablonski at [lawsofux.com](https://lawsofux.com/). The test criteria here are this project's own wording; follow the links in `laws.md` for the original explanations. The Laws of UI draw on WCAG 2.2, the Apple Human Interface Guidelines, and Material Design 3.
+
+The courtroom GIFs are fan references, loaded from [GIPHY](https://giphy.com/) and not stored in this repository. Jujutsu Kaisen and its characters belong to Gege Akutami, Shueisha, and the JUJUTSU KAISEN Project. Ace Attorney and its characters belong to CAPCOM; those two GIFs come from [CAPCOM's GIPHY channel](https://giphy.com/Capcom). This project is not affiliated with or endorsed by any of them, and the MIT license below does not cover those images.
 
 ## License
 

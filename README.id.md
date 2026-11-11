@@ -1,6 +1,8 @@
 <p align="center">
-  <img src="./assets/banner.png" alt="lawful-ui: Make your UI obey the law. Kartu putusan berisi daftar hukum dengan hasil FAIL, WARN, dan PASS." width="100%" />
+  <img src="https://media.giphy.com/media/oAL0Omuf9uUbF1o0bb/giphy.gif" alt="Hiromi Higuruma, pengacara dari Jujutsu Kaisen, duduk di ruang sidang" width="640" />
 </p>
+
+<p align="center"><em>Domain Expansion: Deadly Sentencing. UI-mu disidang.</em></p>
 
 <div align="center">
 
@@ -13,6 +15,10 @@ Skill untuk AI agent supaya **membuat** tampilan yang mengikuti **30 Laws of UX*
 [Dua mode](#dua-mode) · [Pasang](#cara-pasang) · [Daftar hukum](#daftar-hukum) · [Cara pakai](#cara-pakai) · [Coba demo](#coba-di-halaman-demo) · [English](README.md)
 
 </div>
+
+<p align="center">
+  <img src="./assets/banner.png" alt="lawful-ui: Make your UI obey the law. Kartu putusan berisi daftar hukum dengan hasil FAIL, WARN, dan PASS." width="100%" />
+</p>
 
 ---
 
@@ -47,6 +53,12 @@ Satu halaman dari satu kali uji adalah contoh, bukan benchmark, dan agent yang m
 
 ## Yang dilakukan mode Test
 
+<p align="center">
+  <img src="https://media.giphy.com/media/IgBMDZCU5IRUFKGhpy/giphy.gif" alt="Phoenix Wright dari Ace Attorney menggebrak meja pembela dengan kedua tangan" width="420" />
+</p>
+
+<p align="center"><em>Sidang dibuka.</em></p>
+
 Cukup bilang ke AI agent "tolong testing halaman ini". Dengan lawful-ui terpasang, AI tidak lagi menebak, tetapi menjalankan prosedur:
 
 1. Mendata semua layar dan semua komponen di dalamnya, termasuk state yang sering terlupa (kosong, loading, error, disabled).
@@ -57,6 +69,12 @@ Cukup bilang ke AI agent "tolong testing halaman ini". Dengan lawful-ui terpasan
 Bisa dipakai pada aplikasi yang sedang berjalan (browser, emulator, simulator), pada kode sumber saja, atau pada screenshot. Setiap temuan menyebut asal buktinya.
 
 ## Contoh temuan
+
+<p align="center">
+  <img src="https://media.giphy.com/media/52G16STbF7QwogTVkg/giphy.gif" alt="Miles Edgeworth dari Ace Attorney mengajukan keberatan dari meja penuntut" width="420" />
+</p>
+
+<p align="center"><em>Penuntut mengajukan barang bukti.</em></p>
 
 Dari pengujian halaman demo di repo ini:
 
@@ -250,6 +268,8 @@ Lalu minta ke agent: `tolong testing http://127.0.0.1:8765/violations.html`.
 ## Kredit
 
 Laws of UX dikumpulkan oleh Jon Yablonski di [lawsofux.com](https://lawsofux.com/). Kriteria uji di sini ditulis dengan kata-kata proyek ini sendiri; tautan ke penjelasan asli ada di `laws.md`. Laws of UI bersumber dari WCAG 2.2, Apple Human Interface Guidelines, dan Material Design 3.
+
+GIF ruang sidang adalah referensi penggemar, dimuat dari [GIPHY](https://giphy.com/) dan tidak disimpan di repo ini. Jujutsu Kaisen dan karakternya milik Gege Akutami, Shueisha, dan JUJUTSU KAISEN Project. Ace Attorney dan karakternya milik CAPCOM; dua GIF itu berasal dari [kanal GIPHY CAPCOM](https://giphy.com/Capcom). Proyek ini tidak berafiliasi dengan atau didukung oleh mereka, dan lisensi MIT di bawah tidak mencakup gambar-gambar tersebut.
 
 ## Lisensi
 
